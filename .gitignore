@@ -24,3 +24,4 @@ celerybeat.pid
 
 # Media
 media/posters/
+posters

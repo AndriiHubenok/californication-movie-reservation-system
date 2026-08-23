@@ -18,9 +18,9 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-MEDIA_URL = '/media/'
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#
+# MEDIA_URL = '/media/'
 
 load_dotenv(BASE_DIR / '.env')
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
+    'storages',
 
     'users.apps.UsersConfig',
     'movies.apps.MoviesConfig',
@@ -138,7 +139,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = "blogs.storage.StaticS3Boto3Storage"
+
+MEDIA_URL = '/media/'
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+# AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+# AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
+# AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+#
+# AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_URL")
+# MINIO_ACCESS_URL = os.getenv("MINIO_ACCESS_URL")
 
 
 # Email
@@ -174,3 +187,30 @@ encoded_user = urllib.parse.quote_plus(raw_user)
 encoded_password = urllib.parse.quote_plus(raw_password)
 
 CELERY_BROKER_URL = f'amqp://{encoded_user}:{encoded_password}@localhost:5672//'
+
+AWS_ACCESS_KEY_ID = os.getenv("MINIO_ROOT_USER")
+AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_ROOT_PASSWORD")
+AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+
+AWS_S3_USE_SSL = False
+AWS_S3_ADDRESSING_STYLE = 'path'
+AWS_S3_FILE_OVERWRITE = False
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        "OPTIONS": {
+            "access_key": AWS_ACCESS_KEY_ID,
+            "secret_key": AWS_SECRET_ACCESS_KEY,
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "endpoint_url": AWS_S3_ENDPOINT_URL,
+            "addressing_style": AWS_S3_ADDRESSING_STYLE,
+            "use_ssl": AWS_S3_USE_SSL,
+            "querystring_auth": False,
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
