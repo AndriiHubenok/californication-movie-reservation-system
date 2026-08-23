@@ -8,3 +8,5 @@ app = Celery('cinema_config')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.autodiscover_tasks()
+
+# celery -A cinema_config worker --loglevel=info -P solo

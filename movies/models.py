@@ -10,8 +10,8 @@ class Movie(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
 
-    # Для ImageField потрібна додаткова бібліотека (Pillow), тому для простоти використаємо URL
-    poster = models.URLField(blank=True, null=True)
+    poster = models.ImageField(upload_to='posters/', blank=True, null=True)
+    # poster = models.URLField(blank=True, null=True)
 
     genres = models.ManyToManyField(Genre, related_name='movies')
 
