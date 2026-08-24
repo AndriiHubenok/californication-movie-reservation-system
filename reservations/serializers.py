@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from movies.models import Showtime, Seat
-from reservations.models import Reservation
+from reservations.models import Reservation, Payment
 from .tasks import cancel_unpaid_reservation
 
 
@@ -53,3 +53,9 @@ class ReservationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("This seat is already reserved for the selected showtime.")
 
         return attrs
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payment
+        fields = ['id', 'user', 'reservation', 'amount', 'status', 'created_at']
+        read_only_fields = fields

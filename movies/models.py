@@ -11,7 +11,6 @@ class Movie(models.Model):
     description = models.TextField()
 
     poster = models.ImageField(upload_to='posters/', blank=True, null=True)
-    # poster = models.URLField(blank=True, null=True)
 
     genres = models.ManyToManyField(Genre, related_name='movies')
 
