@@ -1,5 +1,5 @@
 from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAdminUser
@@ -61,23 +61,35 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
 class AdminMovieReportView(APIView):
     permission_classes = [IsAdminUser]
 
-    def get(self, request):
+    def get(self, request, pk=None):
 
-        total_stats = Reservation.objects.filter(status='pending').aggregate(
+        movies_qs = Movie.objects.annotate(
+            sold_tickets=Count(
+                'showtimes__reservations',
+                filter=Q(showtimes__reservations__status='confirmed')
+            ),
+            revenue=Sum(
+                'showtimes__reservations__showtime__price',
+                filter=Q(showtimes__reservations__status='confirmed')
+            )
+        )
+
+        if pk is not None:
+            movie = get_object_or_404(movies_qs, pk=pk)
+
+            return Response({
+                "id": movie.id,
+                "title": movie.title,
+                "tickets_sold": movie.sold_tickets,
+                "revenue": movie.revenue or 0
+            })
+
+        total_stats = Reservation.objects.filter(status='confirmed').aggregate(
             total_revenue=Sum('showtime__price'),
             total_tickets=Count('id')
         )
 
-        movies_report = Movie.objects.annotate(
-            sold_tickets=Count(
-                'showtimes__reservations',
-                filter=Q(showtimes__reservations__status='pending')
-            ),
-            revenue=Sum(
-                'showtimes__reservations__showtime__price',
-                filter=Q(showtimes__reservations__status='pending')
-            )
-        ).order_by('-revenue')
+        movies_report = movies_qs.order_by('-revenue')
 
         report_data = {
             "overall": {
@@ -100,16 +112,12 @@ class AdminMovieReportView(APIView):
 class AdminShowtimeReportView(APIView):
     permission_classes = [IsAdminUser]
 
-    def get(self, request):
-        total_stats = Reservation.objects.filter(status='pending').aggregate(
-            total_revenue=Sum('showtime__price'),
-            total_tickets=Count('id')
-        )
+    def get(self, request, pk=None):
 
-        showtime_report = Showtime.objects.select_related('movie', 'hall').annotate(
+        showtime_qs = Showtime.objects.select_related('movie', 'hall').annotate(
             sold_tickets=Count(
                 'reservations',
-                filter=Q(reservations__status='pending'),
+                filter=Q(reservations__status='confirmed'),
                 distinct=True
             ),
             total_seats=Count(
@@ -129,7 +137,32 @@ class AdminShowtimeReportView(APIView):
                 F('sold_tickets') * F('price'),
                 output_field=DecimalField(max_digits=10, decimal_places=2)
             )
-        ).order_by('-revenue')
+        )
+
+        if pk is not None:
+            showtime = get_object_or_404(showtime_qs, pk=pk)
+
+            return Response({
+                "id": showtime.id,
+                "movie_id": showtime.movie.id,
+                "movie": showtime.movie.title,
+                "hall_id": showtime.hall.id,
+                "hall": showtime.hall.name,
+                "start_time": showtime.start_time,
+                "end_time": showtime.end_time,
+                "total_seats": showtime.total_seats,
+                "tickets_sold": showtime.sold_tickets,
+                "available_seats": showtime.available_seats,
+                "hall_load": showtime.hall_load,
+                "revenue": showtime.revenue or 0,
+            })
+
+        showtime_report = showtime_qs.order_by('-revenue')
+
+        total_stats = Reservation.objects.filter(status='confirmed').aggregate(
+            total_revenue=Sum('showtime__price'),
+            total_tickets=Count('id')
+        )
 
         report_data = {
             "overall": {
