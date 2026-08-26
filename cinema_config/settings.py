@@ -13,6 +13,8 @@ import logging
 import os
 import urllib
 from pathlib import Path
+
+import stripe
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -214,3 +216,5 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+stripe.api_key = os.getenv('STRIPE_API_KEY')

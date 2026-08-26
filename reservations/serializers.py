@@ -57,5 +57,16 @@ class ReservationSerializer(serializers.ModelSerializer):
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
-        fields = ['id', 'user', 'reservation', 'amount', 'status', 'created_at']
+        fields = ['id', 'transaction_id', 'user', 'reservation', 'amount', 'status', 'created_at']
         read_only_fields = fields
+
+class CardPaymentSerializer(serializers.Serializer):
+    value = serializers.DecimalField(max_digits=10, decimal_places=2)
+    card_number = serializers.CharField(max_length=16, min_length=16)
+    expiry_date = serializers.CharField(max_length=5)
+    cvv = serializers.CharField(max_length=3, min_length=3)
+
+    def validate_card_number(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Card number must be an integer.")
+        return value

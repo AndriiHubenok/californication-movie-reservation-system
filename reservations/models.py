@@ -35,6 +35,7 @@ class Payment(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
+    transaction_id = models.CharField()
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payments')
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=6, decimal_places=2)
