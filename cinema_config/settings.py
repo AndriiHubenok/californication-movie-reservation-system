@@ -30,12 +30,11 @@ load_dotenv(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!w)ym3**t0llsm#d!7$c1e5a%3(e2))0vpaob2%2*ilsfhdozt'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(os.environ.get("DEBUG", default=0))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS","127.0.0.1").split(",")
 
 
 # Application definition
@@ -188,7 +187,7 @@ raw_password = os.getenv('RABBITMQ_PASSWORD', '').strip()
 encoded_user = urllib.parse.quote_plus(raw_user)
 encoded_password = urllib.parse.quote_plus(raw_password)
 
-CELERY_BROKER_URL = f'amqp://{encoded_user}:{encoded_password}@localhost:5672//'
+CELERY_BROKER_URL = f'amqp://{encoded_user}:{encoded_password}@rabbitmq:5672//'
 
 AWS_ACCESS_KEY_ID = os.getenv("MINIO_ROOT_USER")
 AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_ROOT_PASSWORD")
@@ -218,3 +217,4 @@ STORAGES = {
 }
 
 stripe.api_key = os.getenv('STRIPE_API_KEY')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')

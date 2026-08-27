@@ -29,11 +29,11 @@ class ReservationViewSet(viewsets.ModelViewSet):
     def pay(self, request, pk=None):
         reservation = self.get_object()
 
-        card_serializer = CardPaymentSerializer(data=request.data)
-        if not card_serializer.is_valid():
-            return Response(card_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        payment_serializer = CardPaymentSerializer(data=request.data)
+        if not payment_serializer.is_valid():
+            return Response(payment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        card_data = card_serializer.validated_data
+        payment_method_id = payment_serializer.validated_data['payment_method_id']
 
         if reservation.user != self.request.user:
             return Response({"error": "You are not authorized to perform this action."}, status=401)
@@ -44,13 +44,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         if reservation.status == 'confirmed':
             return Response({"error": "This reservation is already confirmed."}, status=400)
 
-        if card_data['value'] < reservation.showtime.price:
-            return Response({"error": "Not enough money"}, status=400)
-
-        if card_data['value'] > reservation.showtime.price:
-            return Response({"error": "Too much money"}, status=400)
-
-        amount_in_cents = int(card_data['value'] * 100)
+        amount_in_cents = int(reservation.showtime.price * 100)
 
         with transaction.atomic():
 
@@ -67,6 +61,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
                 )
 
                 if payment_intent.status == 'succeeded':
+
                     payment = Payment.objects.create(
                         transaction_id=payment_intent.id,
                         user=self.request.user,
@@ -79,6 +74,13 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
                     serializer = PaymentSerializer(payment)
                     return Response(serializer.data, status=201)
+
+                elif payment_intent.status == 'requires_action':
+
+                    return Response({
+                        "status": "requires_action",
+                        "client_secret": payment_intent.client_secret
+                    }, status=status.HTTP_200_OK)
 
                 return Response(
                     {"error": f"Payment failed with status: {payment_intent.status}"},
