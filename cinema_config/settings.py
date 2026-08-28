@@ -217,4 +217,4 @@ STORAGES = {
 }
 
 stripe.api_key = os.getenv('STRIPE_API_KEY')
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET').strip()

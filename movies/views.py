@@ -1,14 +1,14 @@
 from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField
 from django.shortcuts import render, get_object_or_404
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import IsAdminUser
+from rest_framework import viewsets, status
+from rest_framework.decorators import action, permission_classes
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from movies.models import Movie, Showtime
+from movies.models import Movie, Showtime, Review
 from movies.permissions import IsAdminOrReadOnly
-from movies.serializers import MovieSerializer, ShowtimeSerializer
+from movies.serializers import MovieSerializer, ShowtimeSerializer, ReviewSerializer, PostReviewSerializer
 from reservations.models import Reservation
 
 
@@ -23,6 +23,69 @@ class MovieViewSet(viewsets.ModelViewSet):
         if genre_id:
             queryset = queryset.filter(genres__id=genre_id)
         return queryset
+
+    @action(detail=True, methods=['get'])
+    def info(self, request, pk=None):
+        movie = self.get_object()
+
+        showtimes = Showtime.objects.filter(movie=movie).order_by('-start_time')
+        reviews = Review.objects.filter(movie=movie).order_by('-points')
+
+        movie_data = {
+            "id": movie.id,
+            "title": movie.title,
+            "description": movie.description,
+            "poster": movie.poster.url,
+            "genres": [genre.name for genre in movie.genres.all()],
+            "showtimes":
+                [
+                    {
+                        "id": showtime.id,
+                        "start_time": showtime.start_time,
+                        "end_time": showtime.end_time,
+                        "price": showtime.price,
+                    }
+                    for showtime in showtimes
+                ],
+            "reviews":
+                [
+                    {
+                        "id": review.id,
+                        "points": review.points,
+                        "user_id": review.user.id,
+                        "grade": review.grade,
+                        "comment": review.comment,
+                        "created_at": review.created_at,
+                    }
+                    for review in reviews
+                ],
+        }
+
+        return Response(movie_data)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def review(self, request, pk=None):
+        movie = self.get_object()
+        user = request.user
+
+        review_serializer = PostReviewSerializer(data=request.data)
+        if not review_serializer.is_valid():
+            return Response(review_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        review_data = review_serializer.validated_data
+
+        review = Review.objects.create(
+            user=user,
+            movie=movie,
+            points=0,
+            grade=review_data['grade'],
+            comment=review_data['comment'],
+        )
+
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 
 class ShowtimeViewSet(viewsets.ModelViewSet):
     queryset = Showtime.objects.select_related('movie', 'hall').all()

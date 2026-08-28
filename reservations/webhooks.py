@@ -20,7 +20,7 @@ def stripe_webhook(request):
         print("WEBHOOK ERROR: Invalid payload", e)
         return HttpResponse(status=400)
     except stripe.error.SignatureVerificationError as e:
-        print("WEBHOOK ERROR: Invalid signature! Перевірте STRIPE_WEBHOOK_SECRET у .env", e)
+        print("WEBHOOK ERROR: Invalid signature! Check STRIPE_WEBHOOK_SECRET in .env", e)
         return HttpResponse(status=400)
     except Exception as e:
         print("WEBHOOK ERROR: Unknown error", e)

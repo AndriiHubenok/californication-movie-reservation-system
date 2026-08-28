@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from movies.models import Genre, Movie, Showtime
+from movies.models import Genre, Movie, Showtime, Review
+
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
@@ -18,6 +19,20 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = ['id', 'title', 'description', 'poster', 'genres', 'genre_ids']
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    movie_title = serializers.CharField(source='movie.title', read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ['id', 'user', 'movie', 'movie_title', 'points', 'grade', 'comment', 'created_at']
+        read_only_fields = ['id', 'user', 'movie', 'created_at']
+
+class PostReviewSerializer(serializers.Serializer):
+
+    grade = serializers.IntegerField(min_value=1, max_value=10)
+    comment = serializers.CharField(max_length=500)
 
 class ShowtimeSerializer(serializers.ModelSerializer):
 

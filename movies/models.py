@@ -1,5 +1,8 @@
 from django.db import models
 
+from cinema_config import settings
+
+
 class Genre(models.Model):
     name = models.CharField(max_length=100, unique=True)
 
@@ -16,6 +19,14 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
+
+class Review(models.Model):
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='reviews')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
+    points = models.IntegerField(default=0)
+    grade = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 11)])
+    comment = models.TextField(max_length=500)
+    created_at = models.DateTimeField(auto_now_add=True)
 
 class Hall(models.Model):
     name = models.CharField(max_length=100)
