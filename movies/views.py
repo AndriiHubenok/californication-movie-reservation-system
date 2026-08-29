@@ -1,4 +1,4 @@
-from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField
+from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, permission_classes
@@ -13,7 +13,7 @@ from reservations.models import Reservation
 
 
 class MovieViewSet(viewsets.ModelViewSet):
-    queryset = Movie.objects.all()
+    queryset = Movie.objects.annotate(rating=Avg('reviews__grade'))
     serializer_class = MovieSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -35,6 +35,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             "id": movie.id,
             "title": movie.title,
             "description": movie.description,
+            "rating": round(movie.rating, 1) if movie.rating else 0.0,
             "poster": movie.poster.url,
             "genres": [genre.name for genre in movie.genres.all()],
             "showtimes":

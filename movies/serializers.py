@@ -11,14 +11,14 @@ class GenreSerializer(serializers.ModelSerializer):
 class MovieSerializer(serializers.ModelSerializer):
 
     genres = GenreSerializer(many=True, read_only=True)
-
     genre_ids = serializers.PrimaryKeyRelatedField(
         queryset=Genre.objects.all(), source='genres', write_only=True, many=True
     )
+    rating = serializers.FloatField(read_only=True)
 
     class Meta:
         model = Movie
-        fields = ['id', 'title', 'description', 'poster', 'genres', 'genre_ids']
+        fields = ['id', 'title', 'rating', 'description', 'poster', 'genres', 'genre_ids']
 
 class ReviewSerializer(serializers.ModelSerializer):
 
