@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from reservations.models import Reservation, Payment
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
-from reservations.utils import send_reservation_email
+from reservations.tasks import send_reservation_email
 
 
 class ReservationViewSet(viewsets.ModelViewSet):
@@ -53,7 +53,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
                 payment_intent = stripe.PaymentIntent.create(
                     amount=amount_in_cents,
                     currency="usd",
-                    payment_method="pm_card_visa",
+                    payment_method=payment_method_id,
                     confirm=True,
                     automatic_payment_methods={
                         "enabled": True,
@@ -73,10 +73,9 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     reservation.status = 'confirmed'
                     reservation.save()
 
-                    try:
-                        send_reservation_email(reservation, 'andrewhu08@gmail.com', self.request.user, payment_intent.id)
-                    except Exception as e:
-                        print(f"Error email sending: {e}")
+                    send_reservation_email.delay(
+                        reservation.id, 'andrewhu08@gmail.com', self.request.user.id, payment_intent.id
+                    )
 
                     serializer = PaymentSerializer(payment)
                     return Response(serializer.data, status=201)
