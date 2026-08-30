@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from reservations.models import Reservation, Payment
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
+from reservations.utils import send_reservation_email
 
 
 class ReservationViewSet(viewsets.ModelViewSet):
@@ -71,6 +72,11 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     )
                     reservation.status = 'confirmed'
                     reservation.save()
+
+                    try:
+                        send_reservation_email(reservation, 'andrewhu08@gmail.com', self.request.user, payment_intent.id)
+                    except Exception as e:
+                        print(f"Error email sending: {e}")
 
                     serializer = PaymentSerializer(payment)
                     return Response(serializer.data, status=201)

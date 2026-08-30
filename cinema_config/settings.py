@@ -14,6 +14,7 @@ import os
 import urllib
 from pathlib import Path
 
+import requests
 import stripe
 from dotenv import load_dotenv
 
@@ -218,3 +219,7 @@ STORAGES = {
 
 stripe.api_key = os.getenv('STRIPE_API_KEY')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET').strip()
+
+# "https://api.mailgun.net/v3/sandbox3bd2839b3f3a4069830b856b1dc8ce13.mailgun.org/messages"
+MAILGUN_URL = f"{os.getenv('MAILGUN_BASE_URL')}/v3/{os.getenv('MAILGUN_DOMAIN')}/messages"
+MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY')

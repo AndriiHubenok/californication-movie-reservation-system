@@ -1,3 +1,6 @@
+import os
+
+import requests
 from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
@@ -6,6 +9,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from cinema_config.settings import MAILGUN_URL, MAILGUN_API_KEY
 from movies.models import Movie, Showtime, Review
 from movies.permissions import IsAdminOrReadOnly
 from movies.serializers import MovieSerializer, ShowtimeSerializer, ReviewSerializer, PostReviewSerializer
