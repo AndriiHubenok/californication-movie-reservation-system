@@ -64,7 +64,7 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
         settings.MAILGUN_URL,
         auth=("api", settings.MAILGUN_API_KEY),
         data={
-            "from": "Cinema Reservation <postmaster@sandbox3bd2839b3f3a4069830b856b1dc8ce13.mailgun.org>",
+            "from": "Californication Movie Reservation <postmaster@sandbox3bd2839b3f3a4069830b856b1dc8ce13.mailgun.org>",
             "to": email,
             "subject": subject,
             "text": text_body,
