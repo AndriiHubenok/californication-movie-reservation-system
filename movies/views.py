@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 import requests
 from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg
@@ -13,6 +14,7 @@ from cinema_config.settings import MAILGUN_URL, MAILGUN_API_KEY
 from movies.models import Movie, Showtime, Review
 from movies.permissions import IsAdminOrReadOnly
 from movies.serializers import MovieSerializer, ShowtimeSerializer, ReviewSerializer, PostReviewSerializer
+from movies.tasks import delete_completed_showtime
 from reservations.models import Reservation
 
 
@@ -104,6 +106,15 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(start_time__date=date)
 
         return queryset
+
+    def perform_create(self, serializer):
+        showtime = serializer.save()
+
+        delete_completed_showtime.apply_async(
+            args=[showtime.id],
+            eta=showtime.end_time + timedelta(hours=1),
+        )
+        print("delete task created")
 
     @action(detail=True, methods=['get'])
     def available_seats(self, request, pk=None):
