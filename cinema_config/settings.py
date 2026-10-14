@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
 
     'rest_framework',
     'rest_framework_simplejwt',
@@ -97,7 +98,7 @@ db_host = os.getenv('POSTGRES_DB_HOST', 'localhost').strip()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': db_name,
         'USER': db_user,
         'PASSWORD': db_password,
