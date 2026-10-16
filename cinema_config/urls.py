@@ -32,6 +32,8 @@ urlpatterns = [
     path('api/', include('users.urls')),
 
     path('api/', include('reservations.urls')),
+
+    path('api/', include('cinemas.urls')),
 ]
 
 if settings.DEBUG:

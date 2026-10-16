@@ -1,15 +1,17 @@
 from django.db import models
 
 from cinema_config import settings
-
+from cinemas.models import Cinema
 
 class Genre(models.Model):
+
     name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
 class Movie(models.Model):
+
     title = models.CharField(max_length=255)
     description = models.TextField()
 
@@ -21,6 +23,7 @@ class Movie(models.Model):
         return self.title
 
 class Review(models.Model):
+
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='reviews')
     points = models.IntegerField(default=0)
@@ -29,13 +32,15 @@ class Review(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Hall(models.Model):
+    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, related_name='halls', null=True)
     name = models.CharField(max_length=100)
     total_seats = models.IntegerField()
 
     def __str__(self):
-        return f"{self.name} - {self.total_seats}"
+        return f"{self.cinema.name} - {self.name} - {self.total_seats}"
 
 class Seat(models.Model):
+
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='seats')
     row = models.CharField(max_length=10)
     number = models.IntegerField()
