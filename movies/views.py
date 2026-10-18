@@ -25,9 +25,15 @@ class MovieViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
         genre_id = self.request.query_params.get('genre_id')
         if genre_id:
             queryset = queryset.filter(genres__id=genre_id)
+
+        cinema_id = self.request.query_params.get('cinema_id')
+        if cinema_id:
+            queryset = queryset.filter(showtimes__hall__cinema__id=cinema_id).distinct()
+
         return queryset
 
     @action(detail=True, methods=['get'])
@@ -104,6 +110,10 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
         date = self.request.query_params.get('date')
         if date:
             queryset = queryset.filter(start_time__date=date)
+
+        cinema_id = self.request.query_params.get('cinema_id')
+        if cinema_id:
+            queryset = queryset.filter(hall__cinema__id=cinema_id)
 
         return queryset
 
