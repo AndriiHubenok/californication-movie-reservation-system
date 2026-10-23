@@ -1,3 +1,6 @@
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
+from django.contrib.gis.measure import D
 from django.db.models import QuerySet
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -36,3 +39,30 @@ class CinemaViewSet(viewsets.ModelViewSet):
         cinemas = self.get_queryset()
         serializer = CinemaLocationSerializer(cinemas, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=["get"])
+    def nearby(self, request):
+        cinemas = self.get_queryset()
+
+        user_lon = request.query_params.get("lon")
+        user_lat = request.query_params.get("lat")
+        if user_lon is None or user_lat is None:
+            return Response({"error": "Latitude and longitude are required."}, status=400)
+
+        target_point = Point(float(user_lon), float(user_lat), srid=4326)
+        cinemas = (cinemas
+                   .annotate(distance=Distance("location", target_point))
+                   .order_by('distance'))
+
+        movie_id = request.query_params.get("movie_id")
+        if movie_id:
+            cinemas = cinemas.filter(halls__showtimes__movie_id=movie_id).distinct()
+
+        radius = request.query_params.get("radius")
+        if radius:
+            cinemas = cinemas.filter(location__distance_lte=(target_point, D(km=float(radius))))
+
+        serializer = CinemaLocationSerializer(cinemas, many=True)
+        return Response(serializer.data)
+
+
