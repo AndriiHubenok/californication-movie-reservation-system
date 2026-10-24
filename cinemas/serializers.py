@@ -1,8 +1,12 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from cinemas.models import Cinema
-from movies.serializers import HallSerializer
+from cinemas.models import Cinema, Hall
+
+class HallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Hall
+        fields = ["id", "name", "total_seats"]
 
 class CinemaSerializer(serializers.ModelSerializer):
 

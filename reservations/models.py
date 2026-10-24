@@ -1,7 +1,8 @@
 from django.db import models
 
 from cinema_config import settings
-from movies.models import Showtime, Seat
+from cinemas.models import Seat
+from movies.models import Showtime
 
 
 class Reservation(models.Model):
@@ -17,6 +18,8 @@ class Reservation(models.Model):
 
     seat = models.ForeignKey(Seat, on_delete=models.PROTECT, related_name='reservations')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    ticket = models.FileField(upload_to='tickets/', blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 

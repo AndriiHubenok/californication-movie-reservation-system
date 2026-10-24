@@ -2,7 +2,8 @@ from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from movies.models import Showtime, Seat
+from cinemas.models import Seat
+from movies.models import Showtime
 from reservations.models import Reservation, Payment
 from .tasks import cancel_unpaid_reservation
 
@@ -11,8 +12,8 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'showtime', 'seat', 'status', 'created_at']
-        read_only_fields = ['status', 'created_at']
+        fields = ['id', 'showtime', 'seat', 'status', 'ticket', 'created_at']
+        read_only_fields = ['status', 'ticket', 'created_at']
 
     def create(self, validated_data):
         user = self.context['request'].user

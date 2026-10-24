@@ -1,10 +1,8 @@
 from django.contrib import admin
 
-from movies.models import Genre, Seat, Movie, Showtime, Hall
+from movies.models import Genre, Movie, Showtime
 
 admin.site.register(Genre)
-admin.site.register(Seat)
-admin.site.register(Hall)
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):

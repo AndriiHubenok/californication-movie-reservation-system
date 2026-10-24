@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 
 from reservations.models import Reservation, Payment
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
+from reservations.services.ticket_generator import generate_ticket_pdf
 from reservations.tasks import send_reservation_email
 
 
@@ -72,6 +73,8 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     )
                     reservation.status = 'confirmed'
                     reservation.save()
+
+                    generate_ticket_pdf(reservation)
 
                     send_reservation_email.delay(
                         reservation.id, 'andrewhu08@gmail.com', self.request.user.id, payment_intent.id

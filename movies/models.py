@@ -1,7 +1,8 @@
 from django.db import models
 
 from cinema_config import settings
-from cinemas.models import Cinema
+from cinemas.models import Cinema, Hall
+
 
 class Genre(models.Model):
 
@@ -30,26 +31,6 @@ class Review(models.Model):
     grade = models.PositiveIntegerField(choices=[(i, i) for i in range(1, 11)])
     comment = models.TextField(max_length=500)
     created_at = models.DateTimeField(auto_now_add=True)
-
-class Hall(models.Model):
-    cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, related_name='halls', null=True)
-    name = models.CharField(max_length=100)
-    total_seats = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.cinema.name} - {self.name} - {self.total_seats}"
-
-class Seat(models.Model):
-
-    hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='seats')
-    row = models.CharField(max_length=10)
-    number = models.IntegerField()
-
-    class Meta:
-        unique_together = ('hall', 'row', 'number')
-
-    def __str__(self):
-        return f"{self.hall.name} - Row {self.row}, Seat {self.number}"
 
 class Showtime(models.Model):
 

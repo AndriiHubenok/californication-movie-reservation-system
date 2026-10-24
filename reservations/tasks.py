@@ -1,3 +1,5 @@
+from email.message import EmailMessage
+
 import requests
 from celery import shared_task
 
@@ -60,6 +62,13 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
     <p>Enjoy your stay!</p>
     """
 
+    with open(reservation.ticket) as file:
+        pdf_bytes = file.read()
+
+    files = [
+        ("attachment", ("ticket.pdf", pdf_bytes, "application/pdf"))
+    ]
+
     requests.post(
         settings.MAILGUN_URL,
         auth=("api", settings.MAILGUN_API_KEY),
@@ -68,6 +77,7 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
             "to": email,
             "subject": subject,
             "text": text_body,
-            "html": html_body
-        }
+            "html": html_body,
+        },
+        files=files,
     )
