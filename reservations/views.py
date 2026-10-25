@@ -77,7 +77,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     generate_ticket_pdf(reservation)
 
                     send_reservation_email.delay(
-                        reservation.id, 'andrewhu08@gmail.com', self.request.user.id, payment_intent.id
+                        reservation.id, reservation.user.email, self.request.user.id, payment_intent.id
                     )
 
                     serializer = PaymentSerializer(payment)

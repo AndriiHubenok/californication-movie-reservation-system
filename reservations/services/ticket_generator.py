@@ -1,6 +1,7 @@
 import base64
 import io
 import qrcode
+from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 
@@ -34,17 +35,20 @@ def generate_ticket_pdf(reservation) -> bytes:
 
     context = {
         "reservation": reservation,
-        "movie": reservation.session.movie,
-        "cinema": reservation.session.cinema_hall.cinema,
-        "hall": reservation.session.cinema_hall,
-        "session": reservation.session,
-        "seats": reservation.seats.all(),
+        "movie": reservation.showtime.movie,
+        "cinema": reservation.showtime.hall.cinema,
+        "hall": reservation.showtime.hall,
+        "session": reservation.showtime,
+        "seats": reservation.seat,
         "qr_code_uri": qr_code_uri,
     }
 
-    filepath = f"tickets/ticket_{reservation.id}.html"
-    html_content = render_to_string(filepath, context)
+    template_name = "tickets/ticket.html"
+    html_content = render_to_string(template_name, context)
+
     pdf_bytes = HTML(string=html_content).write_pdf()
-    reservation.ticket = filepath
+
+    filename = f"ticket_{reservation.id}.pdf"
+    reservation.ticket.save(filename, ContentFile(pdf_bytes), save=True)
 
     return pdf_bytes

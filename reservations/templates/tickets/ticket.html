@@ -106,26 +106,20 @@
 <div class="header">
     <div class="cinema-name">{{ cinema.name }}</div>
     <div class="movie-title">{{ movie.title }}</div>
-    <div class="session-info">{{ session.start_time|date:"d.m.Y — H:i" }}</div>
+    <div class="session-info">{{ showtime.start_time|date:"d.m.Y — H:i" }}</div>
 </div>
 
 <div class="details-grid">
     <div class="detail-item">
-        <div class="detail-label">Зал</div>
+        <div class="detail-label">Hall</div>
         <div class="detail-value">{{ hall.name }}</div>
-    </div>
-    <div class="detail-item">
-        <div class="detail-label">Тривалість</div>
-        <div class="detail-value">{{ movie.duration_minutes }} хв.</div>
     </div>
 </div>
 
 <div class="seats-container">
-    <div class="detail-label">Місця</div>
+    <div class="detail-label">Seats</div>
     <div class="detail-value">
-        {% for seat in seats %}
-        Ряд {{ seat.row }}, Місце {{ seat.number }}{% if not forloop.last %}; {% endif %}
-        {% endfor %}
+        Row {{ seat.row }}, Seat {{ seat.number }}
     </div>
 </div>
 

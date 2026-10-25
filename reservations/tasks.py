@@ -62,7 +62,7 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
     <p>Enjoy your stay!</p>
     """
 
-    with open(reservation.ticket) as file:
+    with reservation.ticket.open('rb') as file:
         pdf_bytes = file.read()
 
     files = [

@@ -29,7 +29,8 @@ def stripe_webhook(request):
     if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
 
-        reservation_id = payment_intent.get('metadata', {}).get('reservation_id')
+        payment_intent_data = payment_intent.to_dict()
+        reservation_id = payment_intent_data.get("metadata", {}).get("reservation_id")
 
         if reservation_id:
             try:
