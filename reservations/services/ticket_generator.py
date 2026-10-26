@@ -38,7 +38,7 @@ def generate_ticket_pdf(reservation) -> bytes:
         "movie": reservation.showtime.movie,
         "cinema": reservation.showtime.hall.cinema,
         "hall": reservation.showtime.hall,
-        "session": reservation.showtime,
+        "showtime": reservation.showtime,
         "seats": reservation.seat,
         "qr_code_uri": qr_code_uri,
     }

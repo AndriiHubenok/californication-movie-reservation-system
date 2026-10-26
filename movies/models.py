@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.db import models
 
 from cinema_config import settings
@@ -19,6 +21,7 @@ class Movie(models.Model):
     poster = models.ImageField(upload_to='posters/', blank=True, null=True)
 
     genres = models.ManyToManyField(Genre, related_name='movies')
+    duration = models.PositiveIntegerField(default=120)
 
     def __str__(self):
         return self.title
@@ -37,8 +40,15 @@ class Showtime(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='showtimes')
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='showtimes')
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
+    end_time = models.DateTimeField(blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
+
+    def save(self, *args, **kwargs):
+        if self.start_time and self.movie:
+            self.end_time = self.start_time + timedelta(
+                minutes=self.movie.duration + 15
+            )
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.movie.title} ({self.hall.name}) - {self.start_time.strftime('%Y-%m-%d %H:%M')}"
