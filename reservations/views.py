@@ -1,6 +1,9 @@
+import uuid
+
 import stripe
 from django.db import transaction
 from django.shortcuts import render
+from django.utils import timezone
 from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -9,7 +12,7 @@ from rest_framework.views import APIView
 
 from reservations.models import Reservation, Payment
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
-from reservations.services.ticket_generator import generate_ticket_pdf
+from reservations.services import ticket_service
 from reservations.tasks import send_reservation_email
 
 
@@ -74,7 +77,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
                     reservation.status = 'confirmed'
                     reservation.save()
 
-                    generate_ticket_pdf(reservation)
+                    ticket_service.generate_ticket_pdf(reservation)
 
                     send_reservation_email.delay(
                         reservation.id, reservation.user.email, self.request.user.id, payment_intent.id
@@ -100,6 +103,39 @@ class ReservationViewSet(viewsets.ModelViewSet):
 
             except stripe.error.StripeError as e:
                 return Response({"error": "Payment provider is currently unavailable."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    def validate(self, request, pk=None):
+        qr_data = request.query_params.get('qr_data')
+
+        if not qr_data:
+            return Response({"error": "QR code data is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        ticket_token = ticket_service.validate_scanned_ticket(qr_data)
+
+        try:
+            reservation = Reservation.objects.get(ticket_token=ticket_token)
+        except Reservation.DoesNotExist:
+            return Response({"error": "Invalid ticket token."}, status=status.HTTP_404_NOT_FOUND)
+
+        if reservation.status != 'confirmed':
+            return Response({"error": "This reservation is not confirmed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if reservation.is_used:
+            return Response({"error": "This ticket has already been used."}, status=status.HTTP_400_BAD_REQUEST)
+
+        reservation.is_used = True
+        reservation.used_at = timezone.now()
+        reservation.save()
+
+        return Response({
+            "message": "Ticket validated successfully.",
+            "reservation_id": reservation.id,
+            "movie_title": reservation.showtime.movie.title,
+            "showtime": reservation.showtime.start_time,
+            "seat": str(reservation.seat),
+            "user": reservation.user.username
+        }, status=status.HTTP_200_OK)
 
 class PaymentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Payment.objects.all()

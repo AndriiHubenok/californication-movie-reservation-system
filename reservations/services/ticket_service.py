@@ -1,6 +1,9 @@
 import base64
 import io
+import uuid
+
 import qrcode
+from django.core import signing
 from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
@@ -30,8 +33,11 @@ def generate_ticket_pdf(reservation) -> bytes:
     """
     Render HTML-template of the ticket and compile it into a PDF using WeasyPrint.
     """
-    qr_payload = f"TICKET:{reservation.id}:{reservation.user_id}"
-    qr_code_uri = generate_qr_code_base64(qr_payload)
+    signer = signing.Signer(salt="ticket-check-in")
+    raw_payload = str(reservation.ticket_token)
+    signed_payload = signer.sign(raw_payload)
+
+    qr_code_uri = generate_qr_code_base64(signed_payload)
 
     context = {
         "reservation": reservation,
@@ -39,7 +45,7 @@ def generate_ticket_pdf(reservation) -> bytes:
         "cinema": reservation.showtime.hall.cinema,
         "hall": reservation.showtime.hall,
         "showtime": reservation.showtime,
-        "seats": reservation.seat,
+        "seat": reservation.seat,
         "qr_code_uri": qr_code_uri,
     }
 
@@ -52,3 +58,11 @@ def generate_ticket_pdf(reservation) -> bytes:
     reservation.ticket.save(filename, ContentFile(pdf_bytes), save=True)
 
     return pdf_bytes
+
+def validate_scanned_ticket(qr_data: str):
+    signer = signing.Signer(salt="ticket-check-in")
+    try:
+        ticket_token = signer.unsign(qr_data)
+        return uuid.UUID(ticket_token)
+    except (signing.BadSignature, ValueError):
+        return None

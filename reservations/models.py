@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 
 from cinema_config import settings
@@ -20,6 +22,12 @@ class Reservation(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     ticket = models.FileField(upload_to='tickets/', blank=True, null=True)
+
+    ticket_token = models.UUIDField(
+        default=uuid.uuid4, editable=False, db_index=True
+    )
+    is_used = models.BooleanField(default=False)
+    used_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
