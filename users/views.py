@@ -6,7 +6,7 @@ from django.utils.http import urlsafe_base64_decode
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 
-from users.serializers import RegisterSerializer, UserSerializer
+from users.serializers import RegisterSerializer, UserSerializer, StaffUserSerializer
 from users.tasks import send_verification_email_task
 
 User = get_user_model()
@@ -51,3 +51,11 @@ class UserProfileView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+class CreateStaffUserView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = StaffUserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def perform_create(self, serializer):
+        serializer.save(is_active=True)

@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from reservations.models import Reservation, Payment
+from reservations.permissions import IsStaff
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
 from reservations.services import ticket_service
 from reservations.tasks import send_reservation_email
@@ -104,7 +105,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
             except stripe.error.StripeError as e:
                 return Response({"error": "Payment provider is currently unavailable."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    @action(detail=False, methods=['get'], permission_classes=[IsStaff])
     def validate(self, request, pk=None):
         qr_data = request.query_params.get('qr_data')
 
