@@ -1,13 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cinema-frontend</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>Cinema</title>
+</head>
+<body>
+    <header class="header">
+        <h1>Cinema</h1>
+        <nav class="nav">
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="movies.html">Movies</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="movies-section">
+            <h2 class="movies-section-title">Now Showing</h2>
+            <div class="movies-grid">
+                <article class="movie-card">
+                    <h3>Forrest Gump</h3>
+                    <img class="movie-poster" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUVjnnyK_0eE_hHAkCsWur3ZWhHOjVA-mxdEBk6f5BDQ&s=10" alt="Forrest Gump Movie Poster">
+                    <ul class="movie-details">
+                        <li>Director: Robert Zemeckis</li>
+                        <li>Release Year: 1994</li>
+                        <li>Genre: Drama, Romance</li>
+                        <li>Rating: PG-13</li>
+                    </ul>
+                    <p class="movie-description">A chronicle of the life of a man named Forrest Gump, who is a kind-hearted but intellectually disabled man.</p>
+                    <button type="button" class="btn btn-primary">Buy Tickets</button>
+                </article>
+                <article class="movie-card">
+                    <h3>Inception</h3>
+                    <img class="movie-poster" src="https://m.media-amazon.com/images/I/912AErFSBHL._AC_UF894,1000_QL80_.jpg" alt="Inception Movie Poster">
+                    <ul class="movie-details">
+                        <li>Director: Christopher Nolan</li>
+                        <li>Release Year: 2010</li>
+                        <li>Genre: Action, Sci-Fi</li>
+                        <li>Rating: PG-13</li>
+                    </ul>
+                    <p class="movie-description">A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.</p>
+                    <button type="button" class="btn btn-primary">Buy Tickets</button>
+                </article>
+            </div>
+        </section>
+    </main>
+    <footer class="footer">
+        <p>&copy; 2026 Cinema. All rights reserved.</p>
+    </footer>
+</body>
 </html>
+
