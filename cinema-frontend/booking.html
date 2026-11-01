@@ -11,6 +11,7 @@
     <h1>Booking</h1>
     <nav class="nav">
         <ul class="nav-list">
+            <li id="auth-nav-item"><a href="login.html">Login</a></li>
             <li><a href="index.html">Home</a></li>
             <li><a href="movies.html">Movies</a></li>
             <li><a href="contact.html">Contact</a></li>
@@ -18,60 +19,60 @@
     </nav>
 </header>
 <main class="booking-container">
-    <h2 class="booking-title">Booking: Forrest Gump</h2>
-    <p class="booking-hall-time">Hall 1 - 19:30</p>
+    <h2 id="movie-title" class="booking-title">Loading...</h2>
+    <p id="movie-details" class="booking-hall-time"></p>
     <div class="screen">
         <p></p>
     </div>
     <div class="cinema-hall">
-        <button type="button" class="seat" aria-label="Row 1, Seat 1"></button>
-        <button type="button" class="seat" aria-label="Row 1, Seat 2"></button>
-        <button type="button" class="seat" aria-label="Row 1, Seat 3"></button>
-        <button type="button" class="seat occupied" aria-label="Row 1, Seat 4"></button>
-        <button type="button" class="seat occupied" aria-label="Row 1, Seat 5"></button>
-        <button type="button" class="seat" aria-label="Row 1, Seat 6"></button>
-        <button type="button" class="seat" aria-label="Row 1, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 1, Seat 8"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 1"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 2"></button>
-        <button type="button" class="seat occupied" aria-label="Row 2, Seat 3"></button>
-        <button type="button" class="seat occupied" aria-label="Row 2, Seat 4"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 5"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 6"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 2, Seat 8"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 1"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 2"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 3"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 4"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 5"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 6"></button>
-        <button type="button" class="seat occupied" aria-label="Row 3, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 3, Seat 8"></button>
-        <button type="button" class="seat occupied" aria-label="Row 4, Seat 1"></button>
-        <button type="button" class="seat occupied" aria-label="Row 4, Seat 2"></button>
-        <button type="button" class="seat occupied" aria-label="Row 4, Seat 3"></button>
-        <button type="button" class="seat" aria-label="Row 4, Seat 4"></button>
-        <button type="button" class="seat occupied" aria-label="Row 4, Seat 5"></button>
-        <button type="button" class="seat occupied" aria-label="Row 4, Seat 6"></button>
-        <button type="button" class="seat" aria-label="Row 4, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 4, Seat 8"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 1"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 2"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 3"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 4"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 5"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 6"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 5, Seat 8"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 1"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 2"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 3"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 4"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 5"></button>
-        <button type="button" class="seat occupied" aria-label="Row 6, Seat 6"></button>
-        <button type="button" class="seat occupied" aria-label="Row 6, Seat 7"></button>
-        <button type="button" class="seat" aria-label="Row 6, Seat 8"></button>
+        <button type="button" class="seat" data-row="1" data-seat="1" aria-label="Row 1, Seat 1"></button>
+        <button type="button" class="seat" data-row="1" data-seat="2" aria-label="Row 1, Seat 2"></button>
+        <button type="button" class="seat" data-row="1" data-seat="3" aria-label="Row 1, Seat 3"></button>
+        <button type="button" class="seat" data-row="1" data-seat="4" aria-label="Row 1, Seat 4"></button>
+        <button type="button" class="seat" data-row="1" data-seat="5" aria-label="Row 1, Seat 5"></button>
+        <button type="button" class="seat" data-row="1" data-seat="6" aria-label="Row 1, Seat 6"></button>
+        <button type="button" class="seat" data-row="1" data-seat="7" aria-label="Row 1, Seat 7"></button>
+        <button type="button" class="seat" data-row="1" data-seat="8" aria-label="Row 1, Seat 8"></button>
+        <button type="button" class="seat" data-row="2" data-seat="1" aria-label="Row 2, Seat 1"></button>
+        <button type="button" class="seat" data-row="2" data-seat="2" aria-label="Row 2, Seat 2"></button>
+        <button type="button" class="seat" data-row="2" data-seat="3" aria-label="Row 2, Seat 3"></button>
+        <button type="button" class="seat" data-row="2" data-seat="4" aria-label="Row 2, Seat 4"></button>
+        <button type="button" class="seat" data-row="2" data-seat="5" aria-label="Row 2, Seat 5"></button>
+        <button type="button" class="seat" data-row="2" data-seat="6" aria-label="Row 2, Seat 6"></button>
+        <button type="button" class="seat" data-row="2" data-seat="7" aria-label="Row 2, Seat 7"></button>
+        <button type="button" class="seat" data-row="2" data-seat="8" aria-label="Row 2, Seat 8"></button>
+        <button type="button" class="seat" data-row="3" data-seat="1" aria-label="Row 3, Seat 1"></button>
+        <button type="button" class="seat" data-row="3" data-seat="2" aria-label="Row 3, Seat 2"></button>
+        <button type="button" class="seat" data-row="3" data-seat="3" aria-label="Row 3, Seat 3"></button>
+        <button type="button" class="seat" data-row="3" data-seat="4" aria-label="Row 3, Seat 4"></button>
+        <button type="button" class="seat" data-row="3" data-seat="5" aria-label="Row 3, Seat 5"></button>
+        <button type="button" class="seat" data-row="3" data-seat="6" aria-label="Row 3, Seat 6"></button>
+        <button type="button" class="seat" data-row="3" data-seat="7" aria-label="Row 3, Seat 7"></button>
+        <button type="button" class="seat" data-row="3" data-seat="8" aria-label="Row 3, Seat 8"></button>
+        <button type="button" class="seat" data-row="4" data-seat="1" aria-label="Row 4, Seat 1"></button>
+        <button type="button" class="seat" data-row="4" data-seat="2" aria-label="Row 4, Seat 2"></button>
+        <button type="button" class="seat" data-row="4" data-seat="3" aria-label="Row 4, Seat 3"></button>
+        <button type="button" class="seat" data-row="4" data-seat="4" aria-label="Row 4, Seat 4"></button>
+        <button type="button" class="seat" data-row="4" data-seat="5" aria-label="Row 4, Seat 5"></button>
+        <button type="button" class="seat" data-row="4" data-seat="6" aria-label="Row 4, Seat 6"></button>
+        <button type="button" class="seat" data-row="4" data-seat="7" aria-label="Row 4, Seat 7"></button>
+        <button type="button" class="seat" data-row="4" data-seat="8" aria-label="Row 4, Seat 8"></button>
+        <button type="button" class="seat" data-row="5" data-seat="1" aria-label="Row 5, Seat 1"></button>
+        <button type="button" class="seat" data-row="5" data-seat="2" aria-label="Row 5, Seat 2"></button>
+        <button type="button" class="seat" data-row="5" data-seat="3" aria-label="Row 5, Seat 3"></button>
+        <button type="button" class="seat" data-row="5" data-seat="4" aria-label="Row 5, Seat 4"></button>
+        <button type="button" class="seat" data-row="5" data-seat="5" aria-label="Row 5, Seat 5"></button>
+        <button type="button" class="seat" data-row="5" data-seat="6" aria-label="Row 5, Seat 6"></button>
+        <button type="button" class="seat" data-row="5" data-seat="7" aria-label="Row 5, Seat 7"></button>
+        <button type="button" class="seat" data-row="5" data-seat="8" aria-label="Row 5, Seat 8"></button>
+        <button type="button" class="seat" data-row="6" data-seat="1" aria-label="Row 6, Seat 1"></button>
+        <button type="button" class="seat" data-row="6" data-seat="2" aria-label="Row 6, Seat 2"></button>
+        <button type="button" class="seat" data-row="6" data-seat="3" aria-label="Row 6, Seat 3"></button>
+        <button type="button" class="seat" data-row="6" data-seat="4" aria-label="Row 6, Seat 4"></button>
+        <button type="button" class="seat" data-row="6" data-seat="5" aria-label="Row 6, Seat 5"></button>
+        <button type="button" class="seat" data-row="6" data-seat="6" aria-label="Row 6, Seat 6"></button>
+        <button type="button" class="seat" data-row="6" data-seat="7" aria-label="Row 6, Seat 7"></button>
+        <button type="button" class="seat" data-row="6" data-seat="8" aria-label="Row 6, Seat 8"></button>
     </div>
     <div class="legend">
         <div class="legend-item">
@@ -87,9 +88,10 @@
     <div class="booking-summary">
         <p class="booking-summary-text">You have selected <span id="count">0</span> seats for a price of <span
                 id="total">0</span>$</p>
-        <button type="button" class="btn btn-primary">Confirm Booking</button>
+        <button type="button" id="confirm-booking-btn" class="btn btn-primary">Confirm Booking</button>
     </div>
 </main>
-<script src="booking.js"></script>
+<script type="module" src="login.js"></script>
+<script type="module" src="booking.js"></script>
 </body>
 </html>
