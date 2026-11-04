@@ -10,50 +10,77 @@ from .tasks import cancel_unpaid_reservation
 
 class ReservationSerializer(serializers.ModelSerializer):
 
+    seats = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Seat.objects.all(),
+        write_only=True
+    )
+
     class Meta:
         model = Reservation
-        fields = ['id', 'showtime', 'seat', 'status', 'ticket', 'created_at']
+        fields = ['id', 'showtime', 'seats', 'status', 'ticket', 'created_at']
         read_only_fields = ['status', 'ticket', 'created_at']
+
+    def validate(self, attrs):
+        showtime = attrs.get('showtime')
+        seats = attrs.get('seats', [])
+
+        if len(seats) <= 0:
+            raise serializers.ValidationError("At least one seat must be selected.")
+
+        if not seats:
+            raise serializers.ValidationError({"seats": "At least one seat must be selected."})
+
+        for seat in seats:
+            if showtime.hall_id != seat.hall_id:
+                raise serializers.ValidationError({
+                    "seats": f"Seat {seat.id} does not belong to the hall of this showtime."
+                })
+
+        return attrs
 
     def create(self, validated_data):
         user = self.context['request'].user
         showtime = validated_data['showtime']
-        seat_instance = validated_data['seat']
+        seats = validated_data['seats']
+        seat_ids = [seat.id for seat in seats]
 
         with transaction.atomic():
 
-            locked_seat = Seat.objects.select_for_update().get(id=seat_instance.id)
+            locked_seats = Seat.objects.select_for_update().filter(id__in=seat_ids)
+
+            if len(locked_seats) != len(seats):
+                raise serializers.ValidationError({"seats": "Some seats were not found."})
 
             is_taken = Reservation.objects.filter(
                 showtime=showtime,
-                seat=locked_seat,
+                seat__in=locked_seats,
                 status__in=['pending', 'confirmed']
             ).exists()
 
             if is_taken:
-                raise ValidationError({"seat": "This seat is already reserved for the selected showtime."})
+                raise serializers.ValidationError({
+                    "seats": f"Seats are already reserved for this showtime."
+                })
 
-            reservation = Reservation.objects.create(
-                user=user,
-                showtime=showtime,
-                seat=locked_seat,
-                status='pending'
-            )
-            cancel_unpaid_reservation.apply_async((reservation.id,), countdown=900)
+            reservations_to_create = [
+                Reservation(
+                    user=user,
+                    showtime=showtime,
+                    seat=seat,
+                    status='pending'
+                )
+                for seat in locked_seats
+            ]
 
-        return reservation
+            created_reservations = Reservation.objects.bulk_create(reservations_to_create)
 
-    def validate(self, attrs):
-        showtime = attrs.get('showtime')
-        seat = attrs.get('seat')
+            for res in created_reservations:
+                transaction.on_commit(
+                    lambda r_id=res.id: cancel_unpaid_reservation.apply_async((r_id,), countdown=900)
+                )
 
-        if showtime.hall != seat.hall:
-            raise serializers.ValidationError("The selected seat does not belong to the hall of the selected showtime.")
-
-        if Reservation.objects.filter(showtime=showtime, seat=seat).exists():
-            raise serializers.ValidationError("This seat is already reserved for the selected showtime.")
-
-        return attrs
+        return created_reservations
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:

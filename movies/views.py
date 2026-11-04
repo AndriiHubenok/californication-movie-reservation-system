@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+import reservations
 from cinema_config.settings import MAILGUN_URL, MAILGUN_API_KEY
 from movies.models import Movie, Showtime, Review
 from movies.permissions import IsAdminOrReadOnly
@@ -127,25 +128,25 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
         print("delete task created")
 
     @action(detail=True, methods=['get'])
-    def available_seats(self, request, pk=None):
+    def seats(self, request, pk=None):
         showtime = self.get_object()
 
+        seats = showtime.hall.seats.all()
         booked_seat_ids = showtime.reservations.filter(
             status__in=['pending', 'confirmed']
         ).values_list('seat_id', flat=True)
 
-        available_seats_qs = showtime.hall.seats.exclude(id__in=booked_seat_ids)
-
-        available_seats_data = [
+        seats_data = [
             {
                 "id": seat.id,
                 "row": seat.row,
-                "number": seat.number
+                "number": seat.number,
+                "is_booked": seat.id in booked_seat_ids
             }
-            for seat in available_seats_qs
+            for seat in seats
         ]
 
-        return Response({"available_seats": available_seats_data})
+        return Response({'seats': seats_data})
 
 class AdminMovieReportView(APIView):
     permission_classes = [IsAdminUser]

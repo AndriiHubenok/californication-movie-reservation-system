@@ -28,8 +28,19 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Reservation.objects.all()
         return Reservation.objects.filter(user=user)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        reservations = serializer.save()
+        response_serializer = self.get_serializer(reservations, many=True)
+        headers = self.get_success_headers(response_serializer.data)
+
+        return Response(
+            response_serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers
+        )
 
     @action(detail=True, methods=['post'])
     def pay(self, request, pk=None):
