@@ -5,6 +5,7 @@ import uuid
 import qrcode
 from django.core import signing
 from django.core.files.base import ContentFile
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 
@@ -67,9 +68,11 @@ def generate_ticket_pdf(reservation: Reservation) -> bytes:
 
     pdf_bytes = HTML(string=html_content).write_pdf()
 
-    filename = f"reservation_{reservation.id}_tickets.pdf"
-    if hasattr(reservation, 'ticket'):
-        reservation.ticket.save(filename, ContentFile(pdf_bytes), save=True)
+    filename = f"tickets/reservation_{reservation.id}_tickets.pdf"
+
+    saved_path = default_storage.save(filename, ContentFile(pdf_bytes))
+
+    reservation.tickets.all().update(ticket_url=saved_path)
 
     return pdf_bytes
 

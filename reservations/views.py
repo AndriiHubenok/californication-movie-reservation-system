@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from reservations.models import Reservation, Payment
+from reservations.models import Reservation, Payment, Ticket
 from reservations.permissions import IsStaff
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
 from reservations.services import ticket_service
@@ -126,27 +126,29 @@ class ReservationViewSet(viewsets.ModelViewSet):
         ticket_token = ticket_service.validate_scanned_ticket(qr_data)
 
         try:
-            reservation = Reservation.objects.get(ticket_token=ticket_token)
-        except Reservation.DoesNotExist:
+            ticket = Ticket.objects.select_related('reservation', 'showtime__movie', 'seat', 'user').get(ticket_token=ticket_token)
+        except Ticket.DoesNotExist:
             return Response({"error": "Invalid ticket token."}, status=status.HTTP_404_NOT_FOUND)
+
+        reservation = ticket.reservation
 
         if reservation.status != 'confirmed':
             return Response({"error": "This reservation is not confirmed."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if reservation.is_used:
+        if ticket.is_used:
             return Response({"error": "This ticket has already been used."}, status=status.HTTP_400_BAD_REQUEST)
 
-        reservation.is_used = True
-        reservation.used_at = timezone.now()
-        reservation.save()
+        ticket.is_used = True
+        ticket.used_at = timezone.now()
+        ticket.save()
 
         return Response({
             "message": "Ticket validated successfully.",
-            "reservation_id": reservation.id,
-            "movie_title": reservation.showtime.movie.title,
-            "showtime": reservation.showtime.start_time,
-            "seat": str(reservation.seat),
-            "user": reservation.user.username
+            "ticket_id": ticket.id,
+            "movie_title": ticket.showtime.movie.title,
+            "showtime": ticket.showtime.start_time,
+            "seat": str(ticket.seat),
+            "user": ticket.user.username
         }, status=status.HTTP_200_OK)
 
 class PaymentViewSet(viewsets.ReadOnlyModelViewSet):

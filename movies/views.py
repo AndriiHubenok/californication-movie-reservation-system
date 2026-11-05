@@ -132,9 +132,13 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
         showtime = self.get_object()
 
         seats = showtime.hall.seats.all()
-        booked_seat_ids = showtime.reservations.filter(
-            status__in=['pending', 'confirmed']
-        ).values_list('seat_id', flat=True)
+        booked_seat_ids = (
+            showtime.reservations.filter(
+                status__in=['pending', 'confirmed']
+            )
+            .values_list('tickets__seat_id', flat=True)
+            .distinct()
+        )
 
         seats_data = [
             {
