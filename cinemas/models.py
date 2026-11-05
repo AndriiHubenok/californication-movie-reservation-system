@@ -11,7 +11,8 @@ class Cinema(models.Model):
 class Hall(models.Model):
     cinema = models.ForeignKey(Cinema, on_delete=models.CASCADE, related_name='halls', null=True)
     name = models.CharField(max_length=100)
-    total_seats = models.IntegerField()
+    total_seats = models.PositiveIntegerField()
+    rows = models.PositiveIntegerField(default=8)
 
     def __str__(self):
         cinema_name = self.cinema.name if self.cinema else "No Cinema"
@@ -19,8 +20,8 @@ class Hall(models.Model):
 
 class Seat(models.Model):
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE, related_name='seats')
-    row = models.CharField(max_length=10)
-    number = models.IntegerField()
+    row = models.PositiveIntegerField()
+    number = models.PositiveIntegerField()
 
     class Meta:
         unique_together = ('hall', 'row', 'number')

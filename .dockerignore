@@ -1,0 +1,15 @@
+.git
+.gitignore
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.idea
+.vscode
+node_modules
+cinema-client/node_modules
+cinema-frontend/node_modules
+db.sqlite3
+media
+posters

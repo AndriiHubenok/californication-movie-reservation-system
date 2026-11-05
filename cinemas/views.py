@@ -7,8 +7,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from cinemas import permissions
-from cinemas.models import Cinema
-from cinemas.serializers import CinemaSerializer, CinemaDetailSerializer, CinemaLocationSerializer
+from cinemas.models import Cinema, Hall
+from cinemas.serializers import CinemaSerializer, CinemaDetailSerializer, CinemaLocationSerializer, HallSerializer
 
 
 class CinemaViewSet(viewsets.ModelViewSet):
@@ -65,4 +65,33 @@ class CinemaViewSet(viewsets.ModelViewSet):
         serializer = CinemaLocationSerializer(cinemas, many=True)
         return Response(serializer.data)
 
+class HallViewSet(viewsets.ModelViewSet):
+    queryset = Hall.objects.all()
+    serializer_class = HallSerializer
+    permission_classes = [permissions.IsAdminOrReadOnly]
+
+    @action(detail=True, methods=['post'])
+    def fill_seats(self, request, pk=None):
+        hall = self.get_object()
+        total_seats = hall.total_seats
+        rows = hall.rows
+        seats_per_row = total_seats // rows
+
+        existing_seats = set(
+            hall.seats.values_list('row', 'number')
+        )
+
+        seats_to_create = [
+            hall.seats.model(hall=hall, row=row, number=number)
+            for row in range(1, rows + 1)
+            for number in range(1, seats_per_row + 1)
+            if (row, number) not in existing_seats
+        ]
+
+        if seats_to_create:
+            hall.seats.bulk_create(seats_to_create)
+
+        return Response({
+            "message": f"Filled {len(seats_to_create)} seats for hall {hall.name}."
+        })
 
