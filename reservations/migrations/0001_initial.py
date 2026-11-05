@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
+        ('cinemas', '0001_initial'),
         ('movies', '0001_initial'),
     ]
 
@@ -19,7 +20,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.CharField(choices=[('pending', 'Pending'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')], default='pending', max_length=20)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('seat', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='reservations', to='movies.seat')),
+                ('seat', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='reservations', to='cinemas.seat')),
                 ('showtime', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reservations', to='movies.showtime')),
             ],
         ),

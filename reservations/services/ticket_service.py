@@ -8,6 +8,9 @@ from django.core.files.base import ContentFile
 from django.template.loader import render_to_string
 from weasyprint import HTML, CSS
 
+from movies.models import Showtime
+from reservations.models import Ticket, Reservation
+
 
 def generate_qr_code_base64(data: str) -> str:
     """
@@ -28,34 +31,45 @@ def generate_qr_code_base64(data: str) -> str:
     qr_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return f"data:image/png;base64,{qr_base64}"
 
-
-def generate_ticket_pdf(reservation) -> bytes:
+def generate_ticket_pdf(reservation: Reservation) -> bytes:
     """
-    Render HTML-template of the ticket and compile it into a PDF using WeasyPrint.
+    Generates a PDF for the given reservation, including all tickets and their QR codes.
     """
     signer = signing.Signer(salt="ticket-check-in")
-    raw_payload = str(reservation.ticket_token)
-    signed_payload = signer.sign(raw_payload)
 
-    qr_code_uri = generate_qr_code_base64(signed_payload)
+    tickets_data = []
+    tickets = reservation.tickets.select_related(
+        'showtime__movie',
+        'showtime__hall__cinema',
+        'seat'
+    ).all()
+
+    for ticket in tickets:
+        signed_token = signer.sign(str(ticket.ticket_token))
+        qr_code_uri = generate_qr_code_base64(signed_token)
+
+        tickets_data.append({
+            "ticket": ticket,
+            "movie": ticket.showtime.movie,
+            "cinema": ticket.showtime.hall.cinema,
+            "hall": ticket.showtime.hall,
+            "showtime": ticket.showtime,
+            "seat": ticket.seat,
+            "qr_code_uri": qr_code_uri,
+        })
 
     context = {
         "reservation": reservation,
-        "movie": reservation.showtime.movie,
-        "cinema": reservation.showtime.hall.cinema,
-        "hall": reservation.showtime.hall,
-        "showtime": reservation.showtime,
-        "seat": reservation.seat,
-        "qr_code_uri": qr_code_uri,
+        "tickets_data": tickets_data,
     }
 
-    template_name = "tickets/ticket.html"
-    html_content = render_to_string(template_name, context)
+    html_content = render_to_string("tickets/all_tickets.html", context)
 
     pdf_bytes = HTML(string=html_content).write_pdf()
 
-    filename = f"ticket_{reservation.id}.pdf"
-    reservation.ticket.save(filename, ContentFile(pdf_bytes), save=True)
+    filename = f"reservation_{reservation.id}_tickets.pdf"
+    if hasattr(reservation, 'ticket'):
+        reservation.ticket.save(filename, ContentFile(pdf_bytes), save=True)
 
     return pdf_bytes
 

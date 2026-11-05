@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .ticket-wrapper {
+            box-sizing: border-box;
+            height: 100%;
+            border: 2px dashed #444;
+            padding: 24px;
+            border-radius: 8px;
+            page-break-after: always;
+            break-after: page;
+        }
+        .ticket-wrapper:last-child {
+            page-break-after: avoid;
+            break-after: avoid;
+        }
+        .qr-code {
+            width: 140px;
+            height: 140px;
+        }
+    </style>
+</head>
+<body>
+{% for data in tickets_data %}
+<div class="ticket-wrapper">
+    <h2>{{ data.movie.title }}</h2>
+    <p><strong>Cinema:</strong> {{ data.cinema.name }} ({{ data.hall.name }})</p>
+    <p><strong>Beginning:</strong> {{ data.showtime.start_time|date:"d.m.Y H:i" }}</p>
+    <p><strong>Row / Seat:</strong> Row {{ data.seat.row }}, Seat {{ data.seat.number }}</p>
+    <p><strong>Ticket:</strong> #{{ data.ticket.id }}</p>
+
+    <div>
+        <img class="qr-code" src="{{ data.qr_code_uri }}" alt="QR Code">
+    </div>
+</div>
+{% endfor %}
+</body>
+</html>

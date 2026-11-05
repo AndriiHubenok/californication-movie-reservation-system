@@ -33,7 +33,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         reservations = serializer.save()
-        response_serializer = self.get_serializer(reservations, many=True)
+        response_serializer = self.get_serializer(reservations)
         headers = self.get_success_headers(response_serializer.data)
 
         return Response(

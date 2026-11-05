@@ -23,9 +23,11 @@ def cancel_unpaid_reservation(reservation_id):
 @shared_task
 def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
     try:
-        reservation = Reservation.objects.get(id=reservation_id)
-        user = User.objects.get(id=user_id)
-    except (Reservation.DoesNotExist, User.DoesNotExist):
+        reservation = Reservation.objects.select_related('showtime__movie').get(
+            id=reservation_id,
+            user_id=user_id
+        )
+    except Reservation.DoesNotExist:
         return "Error: Reservation or User not found."
 
     movie_title = reservation.showtime.movie.title
@@ -33,6 +35,7 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
     price = reservation.showtime.price
 
     subject = f"🎬 Your ticket for '{movie_title}' accepted!"
+    user = reservation.user
 
     text_body = f"""
     Hello, {user.username}!
@@ -61,7 +64,7 @@ def send_reservation_email(reservation_id, email, user_id, payment_intent_id):
     <p>Enjoy your stay!</p>
     """
 
-    with reservation.ticket.open('rb') as file:
+    with reservation.tickets[0].open('rb') as file:
         pdf_bytes = file.read()
 
     files = [

@@ -4,7 +4,7 @@ from rest_framework.exceptions import ValidationError
 
 from cinemas.models import Seat
 from movies.models import Showtime
-from reservations.models import Reservation, Payment
+from reservations.models import Reservation, Payment, Ticket
 from .tasks import cancel_unpaid_reservation
 
 
@@ -18,8 +18,8 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'showtime', 'seats', 'status', 'ticket', 'created_at']
-        read_only_fields = ['status', 'ticket', 'created_at']
+        fields = ['id', 'showtime', 'seats', 'status', 'tickets', 'created_at']
+        read_only_fields = ['status', 'tickets', 'created_at']
 
     def validate(self, attrs):
         showtime = attrs.get('showtime')
@@ -52,10 +52,9 @@ class ReservationSerializer(serializers.ModelSerializer):
             if len(locked_seats) != len(seats):
                 raise serializers.ValidationError({"seats": "Some seats were not found."})
 
-            is_taken = Reservation.objects.filter(
+            is_taken = Ticket.objects.filter(
                 showtime=showtime,
-                seat__in=locked_seats,
-                status__in=['pending', 'confirmed']
+                seat__in=locked_seats
             ).exists()
 
             if is_taken:
@@ -63,24 +62,27 @@ class ReservationSerializer(serializers.ModelSerializer):
                     "seats": f"Seats are already reserved for this showtime."
                 })
 
-            reservations_to_create = [
-                Reservation(
+            created_reservation = Reservation.objects.create(
+                user=user,
+                showtime=showtime,
+                status='pending'
+            )
+
+            tickets_to_create = [
+                Ticket(
                     user=user,
                     showtime=showtime,
                     seat=seat,
-                    status='pending'
+                    reservation=created_reservation
                 )
                 for seat in locked_seats
             ]
 
-            created_reservations = Reservation.objects.bulk_create(reservations_to_create)
+            Ticket.objects.bulk_create(tickets_to_create)
 
-            for res in created_reservations:
-                transaction.on_commit(
-                    lambda r_id=res.id: cancel_unpaid_reservation.apply_async((r_id,), countdown=900)
-                )
+            cancel_unpaid_reservation.apply_async((created_reservation.id,), countdown=900)
 
-        return created_reservations
+        return created_reservation
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
