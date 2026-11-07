@@ -1,10 +1,10 @@
-import type { Movie } from './types/movie';
-import { MovieCard } from './components/MovieCard';
+import type { Showtime } from './types/showtime.ts';
+import { MovieWithShowtimesCard } from './components/MovieWithShowtimesCard.tsx';
 import './App.css';
 import type {SeatData} from "./types/cinema.ts";
 import {useState} from "react";
 import {CinemaHall} from "./components/CinemaHall.tsx";
-import { MovieList } from './components/MovieList';
+import { MoviesWithShowtimesList } from './components/MoviesWithShowtimesList.tsx';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { HomePage } from './pages/HomePage';
 import { BookingPage } from './pages/BookingPage';
@@ -17,6 +17,8 @@ import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
+
+    localStorage.setItem('accessToken', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzk0MDkyMTM5LCJpYXQiOjE3OTQwODg1MzksImp0aSI6IjVjMDQzMmZmYjY4MDQxZDQ5Y2I3NzdkZGQ4NWE0OTA4IiwidXNlcl9pZCI6IjkifQ.d5cw2gO1adCxuG7VfN1KrVPwSZsS8kG6UkH5alQg9PE")
 
     return (
         <header className="header">
@@ -108,7 +110,7 @@ function App() {
 //           <h1>Cinema</h1>
 //         </header>
 //         <main>
-//           <MovieList onSelectMovie={handleMovieSelect} />
+//           <ShowtimeList onSelectMovie={handleMovieSelect} />
 //         </main>
 //       </div>
 //   );

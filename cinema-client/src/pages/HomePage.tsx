@@ -1,20 +1,20 @@
 import {useNavigate} from 'react-router-dom';
-import {MovieList} from '../components/MovieList';
-import type {Movie} from "../types/movie.ts";
+import {MoviesWithShowtimesList} from '../components/MoviesWithShowtimesList.tsx';
+import type {Showtime} from "../types/showtime.ts";
 
 export const HomePage = () => {
     const navigate = useNavigate();
 
 
 
-    const handleSelectMovie = (movie: Movie) => {
-        localStorage.setItem('selectedMovie', JSON.stringify(movie));
-        navigate(`/booking/${movie.id}`);
+    const handleSelectMovie = (showtime: Showtime) => {
+        localStorage.setItem('selectedShowtime', JSON.stringify(showtime))
+        navigate(`/booking/${showtime.id}`);
     };
 
     return (
         <main>
-            <MovieList onSelectMovie={handleSelectMovie}/>
+            <MoviesWithShowtimesList onSelectMovie={handleSelectMovie}/>
         </main>
     );
 };

@@ -1,10 +1,9 @@
+import type { Showtime } from './showtime';
 
-
-export interface Movie {
+export interface MovieWithShowtimes {
     id: number;
     title: string;
-    description: string;
-    duration: number;
-    poster: string;
-    genres: string[];
+    description?: string;
+    poster?: string;
+    showtimes: Showtime[];
 }

@@ -1,8 +1,8 @@
-import type { SeatData } from '../types/cinema';
-import { Seat } from './Seat';
+import type { Seat } from '../types/seat';
+import { Seat as SeatComponent } from './Seat';
 
 interface CinemaHallProps {
-    seats: SeatData[];
+    seats: Seat[];
     selectedSeatIds: number[];
     onSeatToggle: (seatId: number) => void;
 }
@@ -14,7 +14,7 @@ export const CinemaHall = ({ seats, selectedSeatIds, onSeatToggle }: CinemaHallP
 
             <div className="cinema-hall">
                 {seats.map((seat) => (
-                    <Seat
+                    <SeatComponent
                         key={seat.id}
                         seat={seat}
                         isSelected={selectedSeatIds.includes(seat.id)}

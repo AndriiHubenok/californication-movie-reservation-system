@@ -1,23 +1,58 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { fetchSeats } from '../api/showtimes';
 import { CinemaHall } from '../components/CinemaHall';
-import type { SeatData } from '../types/cinema';
-
-const TICKET_PRICE = 150;
-
-const INITIAL_SEATS: SeatData[] = Array.from({ length: 48 }, (_, index) => ({
-    id: index + 1,
-    row: Math.floor(index / 8) + 1,
-    number: (index % 8) + 1,
-    isOccupied: [3, 4, 18, 19, 35].includes(index + 1)
-}));
+import type { Seat } from '../types/seat';
 
 export const BookingPage = () => {
     const { movieId } = useParams<{ movieId: string }>();
     const navigate = useNavigate();
 
-    const [seats] = useState<SeatData[]>(INITIAL_SEATS);
+    const TICKET_PRICE = 150;
+
+    const [seats, setSeats] = useState<Seat[]>([]);
     const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!movieId) {
+            setIsLoading(false);
+            setError('Missing ID in route.');
+            return;
+        }
+
+        let isCancelled = false;
+
+        const loadSeats = async () => {
+            setIsLoading(true);
+            setError(null);
+            setSelectedSeatIds([]);
+
+            try {
+                const data = await fetchSeats(movieId);
+                if (!isCancelled) {
+                    setSeats(data);
+                }
+            } catch (err) {
+                if (!isCancelled) {
+                    setError(
+                        err instanceof Error ? err.message : 'Failed to load seats.'
+                    );
+                }
+            } finally {
+                if (!isCancelled) {
+                    setIsLoading(false);
+                }
+            }
+        };
+
+        loadSeats();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [movieId]);
 
     const handleSeatToggle = (seatId: number) => {
         setSelectedSeatIds((prev) =>
@@ -39,7 +74,7 @@ export const BookingPage = () => {
                     marginTop: '12px',
                     display: 'block',
                     marginRight: 'auto',
-                    marginLeft: '48px'
+                    marginLeft: '48px',
                 }}
                 onClick={() => {
                     localStorage.removeItem('selectedMovie');
@@ -56,20 +91,27 @@ export const BookingPage = () => {
                 Select your seats below.
             </p>
 
-            <CinemaHall
-                seats={seats}
-                selectedSeatIds={selectedSeatIds}
-                onSeatToggle={handleSeatToggle}
-            />
+            {isLoading ? (
+                <p style={{ textAlign: 'center' }}>Loading seats...</p>
+            ) : error ? (
+                <p style={{ textAlign: 'center', color: '#ff6b6b' }}>{error}</p>
+            ) : (
+                <CinemaHall
+                    seats={seats}
+                    selectedSeatIds={selectedSeatIds}
+                    onSeatToggle={handleSeatToggle}
+                />
+            )}
 
             <div className="booking-summary" style={{ marginTop: '24px', textAlign: 'center' }}>
                 <p className="booking-summary-text">
-                    Selected seats: <strong>{selectedSeatIds.length}</strong> | Total: <strong>{selectedSeatIds.length * TICKET_PRICE}$</strong>
+                    Selected seats: <strong>{selectedSeatIds.length}</strong> | Total:{' '}
+                    <strong>{selectedSeatIds.length * TICKET_PRICE}$</strong>
                 </p>
                 <button
                     type="button"
                     className="btn btn-primary"
-                    disabled={selectedSeatIds.length === 0}
+                    disabled={isLoading || selectedSeatIds.length === 0}
                     style={{ marginTop: '12px' }}
                     onClick={handleConfirm}
                 >

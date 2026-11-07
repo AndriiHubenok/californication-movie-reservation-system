@@ -2,7 +2,7 @@ import os
 from datetime import timedelta
 
 import requests
-from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg
+from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg, Prefetch
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, permission_classes
@@ -99,6 +99,43 @@ class MovieViewSet(viewsets.ModelViewSet):
         serializer = ReviewSerializer(review)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @action(detail=False, methods=['get'])
+    def showtimes(self, request):
+        showtime_qs = Showtime.objects.all()
+
+        date = request.query_params.get('date')
+        if date:
+            showtime_qs = showtime_qs.filter(start_time__date=date)
+
+        cinema_id = request.query_params.get('cinema_id')
+        if cinema_id:
+            showtime_qs = showtime_qs.filter(hall__cinema_id=cinema_id)
+
+        movies = Movie.objects.prefetch_related(
+            Prefetch('showtimes', queryset=showtime_qs.order_by('start_time'))
+        )
+
+        if date or cinema_id:
+            movies = movies.filter(showtimes__in=showtime_qs).distinct()
+
+        return Response([
+            {
+                "id": movie.id,
+                "title": movie.title,
+                "description": movie.description,
+                "poster": movie.poster.url if movie.poster else None,
+                "showtimes": [
+                    {
+                        "id": showtime.id,
+                        "start_time": showtime.start_time,
+                        "end_time": showtime.end_time,
+                        "price": showtime.price,
+                    }
+                    for showtime in movie.showtimes.all()
+                ],
+            }
+            for movie in movies
+        ])
 
 
 class ShowtimeViewSet(viewsets.ModelViewSet):
@@ -150,7 +187,7 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
             for seat in seats
         ]
 
-        return Response({'seats': seats_data})
+        return Response(seats_data)
 
 class AdminMovieReportView(APIView):
     permission_classes = [IsAdminUser]

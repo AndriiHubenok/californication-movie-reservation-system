@@ -1,36 +1,27 @@
-import type { Movie } from '../types/movie';
+import type { Showtime } from '../types/showtime.ts';
+import {apiClient} from "./client.ts";
+import type {MovieWithShowtimes} from "../types/movie.ts";
 
-const MOCK_MOVIES: Movie[] = [
-    {
-        id: 1,
-        title: "Forrest Gump",
-        description: "A chronicle of the life of a man named Forrest Gump.",
-        duration: 142,
-        poster: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUVjnnyK_0eE_hHAkCsWur3ZWhHOjVA-mxdEBk6f5BDQ&s=10",
-        genres: ["Drama", "Romance"]
-    },
-    {
-        id: 2,
-        title: "Inception",
-        description: "A thief who steals corporate secrets through dream-sharing technology.",
-        duration: 148,
-        poster: "https://m.media-amazon.com/images/I/912AErFSBHL._AC_UF894,1000_QL80_.jpg",
-        genres: ["Action", "Sci-Fi"]
-    },
-    {
-        id: 3,
-        title: "Interstellar",
-        description: "A team of explorers travel through a wormhole in space in an attempt to ensure humanity's survival.",
-        duration: 169,
-        poster: "https://de.web.img2.acsta.net/pictures/14/10/24/13/14/481915.jpg",
-        genres: ["Sci-Fi", "Drama"]
-    }
-];
+export async function fetchMoviesWithShowtimes(): Promise<MovieWithShowtimes[]> {
+    const response: Showtime[] = await apiClient<Showtime[]>('/api/movies/showtimes?date=20261110', {
+        method: 'GET',
+    })
+    const movies: MovieWithShowtimes[] = [];
 
-export async function fetchMovies(): Promise<Movie[]> {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve(MOCK_MOVIES);
-        }, 800);
+    response.forEach((showtime) => {
+        const movieIndex = movies.findIndex((movie) => movie.id === showtime.movie);
+        if (movieIndex === -1) {
+            movies.push({
+                id: showtime.movie,
+                title: showtime.movie_title,
+                description: movie.movie_description,
+                poster: movie.movie_poster,
+                showtimes: [showtime],
+            });
+        } else {
+            movies[movieIndex].showtimes.push(showtime);
+        }
     });
+
+    return movies;
 }

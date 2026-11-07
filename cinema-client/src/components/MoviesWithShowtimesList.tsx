@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react';
-import type { Movie } from '../types/movie';
-import { MovieCard } from './MovieCard';
-import { fetchMovies } from '../api/movies';
+import type { Showtime } from '../types/showtime.ts';
+import { MovieWithShowtimesCard } from './MovieWithShowtimesCard.tsx';
+import { fetchMoviesWithShowtimes } from '../api/movies';
+import type {MovieWithShowtimes} from "../types/movie.ts";
 
-interface MovieListProps {
-    onSelectMovie: (movie: Movie) => void;
+interface ShowtimeListProps {
+    onSelectShowtime: (showtime: Showtime) => void;
 }
 
-export const MovieList = ({ onSelectMovie }: MovieListProps) => {
-    const [movies, setMovies] = useState<Movie[]>([]);
+export const MoviesWithShowtimesList = ({ onSelectShowtime: onSelectShowtime }: ShowtimeListProps) => {
+    const [movies, setMovies] = useState<MovieWithShowtimes[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const loadMoviesData = async () => {
+    const loadShowtimesData = async () => {
         setIsLoading(true);
         setErrorMessage(null);
         try {
-            const data = await fetchMovies();
+            const data = await fetchMoviesWithShowtimes();
             setMovies(data);
         } catch (err) {
             setErrorMessage(err instanceof Error ? err.message : 'Unknown error');
@@ -26,7 +27,7 @@ export const MovieList = ({ onSelectMovie }: MovieListProps) => {
     };
 
     useEffect(() => {
-        loadMoviesData();
+        loadShowtimesData();
     }, []);
 
     if (isLoading) {
@@ -44,7 +45,7 @@ export const MovieList = ({ onSelectMovie }: MovieListProps) => {
                 <button
                     type="button"
                     className="btn btn-primary"
-                    onClick={loadMoviesData}
+                    onClick={loadShowtimesData}
                 >
                     Try again
                 </button>
@@ -57,10 +58,10 @@ export const MovieList = ({ onSelectMovie }: MovieListProps) => {
             <h2 className="movies-section-title">Today in Cinema</h2>
             <div className="movies-grid">
                 {movies.map((movie) => (
-                    <MovieCard
+                    <MovieWithShowtimesCard
                         key={movie.id}
                         movie={movie}
-                        onSelect={onSelectMovie}
+                        onSelect={onSelectShowtime}
                     />
                 ))}
             </div>

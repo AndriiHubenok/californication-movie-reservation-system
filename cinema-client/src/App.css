@@ -72,7 +72,7 @@
 
 .cinema-hall {
     display: grid;
-    grid-template-columns: repeat(8, 36px);
+    grid-template-columns: repeat(10, 36px);
     gap: 12px;
     justify-content: center;
     perspective: 500px;

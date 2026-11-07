@@ -1,4 +1,5 @@
 import {apiClient} from "./client.ts";
+import type {Seat} from "../types/seat.ts";
 
 
 export interface ShowtimeSeatsResponse {
@@ -10,8 +11,10 @@ export interface ShowtimeSeatsResponse {
     }
 }
 
-export async function getShowtimeSeats(showtimeId: number): Promise<ShowtimeSeatsResponse> {
-    return apiClient<ShowtimeSeatsResponse>(`/api/showtimes/${showtimeId}/seats/`, {
+export async function fetchSeats(movieId: string) {
+    const response: Seat[] = await apiClient<Seat[]>(`/api/showtimes/${movieId}/seats/`, {
         method: 'GET',
     });
+
+    return response
 }
