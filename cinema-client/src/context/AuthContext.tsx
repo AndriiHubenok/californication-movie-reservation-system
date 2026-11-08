@@ -14,10 +14,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return savedUser ? (JSON.parse(savedUser) as User) : null;
     });
 
-    const login = (newToken: string, userData: User) => {
-        setToken(newToken);
+    const login = (accessToken: string, refreshToken: string, userData: User) => {
+        setToken(accessToken);
         setUser(userData);
-        localStorage.setItem('accessToken', newToken);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
         localStorage.setItem('currentUser', JSON.stringify(userData));
     };
 
@@ -27,6 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         localStorage.removeItem('selectedMovie');
         localStorage.removeItem('selectedSeats');
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('currentUser');
     };
 

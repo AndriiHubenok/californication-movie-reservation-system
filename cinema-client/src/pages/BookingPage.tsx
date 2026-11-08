@@ -77,7 +77,7 @@ export const BookingPage = () => {
                     marginLeft: '48px',
                 }}
                 onClick={() => {
-                    localStorage.removeItem('selectedMovie');
+                    localStorage.removeItem('selectedShowtime');
                     localStorage.removeItem('selectedSeats');
                     navigate('/');
                 }}

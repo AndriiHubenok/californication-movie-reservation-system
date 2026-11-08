@@ -18,7 +18,6 @@ import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
 
-    localStorage.setItem('accessToken', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzk0MTUwMDE3LCJpYXQiOjE3OTQxNDY0MTcsImp0aSI6ImRjNTAzY2Y5N2Y2YjQyMzJiNGMxOWQ5YzdjNzEwNjcxIiwidXNlcl9pZCI6IjkifQ.a4uZr4LeRMW3oBr_OHrEwtNRGXfVfuMQpQ77d7uNo50")
 
     return (
         <header className="header">
@@ -29,7 +28,7 @@ const Header = () => {
                     <li><NavLink to="/checkout">Checkout</NavLink></li>
                     {isAuthenticated ? (
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <span style={{ fontSize: '0.9rem', color: '#a0a0a0' }}>{user?.email}</span>
+                            <span style={{ fontSize: '0.9rem', color: '#a0a0a0' }}>{user?.username}</span>
                             <button
                                 type="button"
                                 onClick={logout}
