@@ -5,16 +5,14 @@ import type {Showtime} from "../types/showtime.ts";
 export const HomePage = () => {
     const navigate = useNavigate();
 
-
-
-    const handleSelectMovie = (showtime: Showtime) => {
+    const handleSelectShowtime = (showtime: Showtime) => {
         localStorage.setItem('selectedShowtime', JSON.stringify(showtime))
         navigate(`/booking/${showtime.id}`);
     };
 
     return (
         <main>
-            <MoviesWithShowtimesList onSelectMovie={handleSelectMovie}/>
+            <MoviesWithShowtimesList onSelectShowtime={handleSelectShowtime}/>
         </main>
     );
 };

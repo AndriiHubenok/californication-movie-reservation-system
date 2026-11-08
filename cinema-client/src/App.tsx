@@ -18,7 +18,7 @@ import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
 
-    localStorage.setItem('accessToken', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzk0MDkyMTM5LCJpYXQiOjE3OTQwODg1MzksImp0aSI6IjVjMDQzMmZmYjY4MDQxZDQ5Y2I3NzdkZGQ4NWE0OTA4IiwidXNlcl9pZCI6IjkifQ.d5cw2gO1adCxuG7VfN1KrVPwSZsS8kG6UkH5alQg9PE")
+    localStorage.setItem('accessToken', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzk0MTUwMDE3LCJpYXQiOjE3OTQxNDY0MTcsImp0aSI6ImRjNTAzY2Y5N2Y2YjQyMzJiNGMxOWQ5YzdjNzEwNjcxIiwidXNlcl9pZCI6IjkifQ.a4uZr4LeRMW3oBr_OHrEwtNRGXfVfuMQpQ77d7uNo50")
 
     return (
         <header className="header">

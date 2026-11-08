@@ -197,6 +197,8 @@ AWS_ACCESS_KEY_ID = os.getenv("MINIO_ROOT_USER")
 AWS_SECRET_ACCESS_KEY = os.getenv("MINIO_ROOT_PASSWORD")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL")
+AWS_S3_CUSTOM_DOMAIN = "localhost:9000/movie-media"
+AWS_S3_URL_PROTOCOL = "http:"
 
 AWS_S3_USE_SSL = False
 AWS_S3_ADDRESSING_STYLE = 'path'
@@ -212,6 +214,8 @@ STORAGES = {
             "endpoint_url": AWS_S3_ENDPOINT_URL,
             "addressing_style": AWS_S3_ADDRESSING_STYLE,
             "use_ssl": AWS_S3_USE_SSL,
+            "custom_domain": AWS_S3_CUSTOM_DOMAIN,
+            "url_protocol": AWS_S3_URL_PROTOCOL,
             "querystring_auth": False,
         },
     },

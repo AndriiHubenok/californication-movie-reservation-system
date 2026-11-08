@@ -5,7 +5,7 @@ import { fetchMoviesWithShowtimes } from '../api/movies';
 import type {MovieWithShowtimes} from "../types/movie.ts";
 
 interface ShowtimeListProps {
-    onSelectShowtime: (showtime: Showtime) => void;
+    onSelectShowtime: (showtime: MovieWithShowtimes) => void;
 }
 
 export const MoviesWithShowtimesList = ({ onSelectShowtime: onSelectShowtime }: ShowtimeListProps) => {

@@ -8,6 +8,12 @@ interface MovieCardProps {
 
 export const MovieWithShowtimesCard = ({ movie, onSelect }: MovieCardProps) => {
 
+    const formatTime = (isoDate: string) =>
+        new Date(isoDate).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+
     return (
         <article className="movie-card">
             <img src={movie.poster} alt={movie.title} className="movie-poster" />
@@ -17,8 +23,8 @@ export const MovieWithShowtimesCard = ({ movie, onSelect }: MovieCardProps) => {
             {/*<p>Genres: {movie.genres.join(', ')}</p>*/}
             <div className="showtimes">
                 {movie.showtimes.map((showtime) => (
-                    <span key={showtime.id} className="showtime" onClick={() => onSelect(showtime)}>
-                        {showtime.time}
+                    <span style={{ cursor: 'pointer', color: 'orange' }} key={showtime.id} className="showtime" onClick={() => onSelect(showtime)}>
+                        {formatTime(showtime.start_time)}
                     </span>
                 ))}
             </div>
