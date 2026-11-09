@@ -8,14 +8,14 @@ interface SeatProps {
 
 export const Seat = ({ seat, isSelected, onToggle }: SeatProps) => {
     let seatClasses = "seat";
-    if (seat.is_occupied) seatClasses += " occupied";
+    if (seat.is_booked) seatClasses += " occupied";
     if (isSelected) seatClasses += " selected";
 
     return (
         <button
             type="button"
             className={seatClasses}
-            disabled={seat.is_occupied}
+            disabled={seat.is_booked}
             onClick={() => onToggle(seat.id)}
             aria-label={`Row ${seat.row}, Seat ${seat.number}`}
         />

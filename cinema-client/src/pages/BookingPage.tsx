@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchSeats } from '../api/showtimes';
+import { fetchShowtimeDetails } from '../api/showtimes';
 import { CinemaHall } from '../components/CinemaHall';
 import type { Seat } from '../types/seat';
 
@@ -8,8 +8,11 @@ export const BookingPage = () => {
     const { movieId } = useParams<{ movieId: string }>();
     const navigate = useNavigate();
 
-    const TICKET_PRICE = 150;
-
+    const [hallName, setHallName] = useState<string>();
+    const [movieName, setMovieName] = useState<string>();
+    const [price, setPrice] = useState<number>();
+    const [startTime, setStartTime] = useState<number>();
+    const [endTime, setEndTime] = useState<number>();
     const [seats, setSeats] = useState<Seat[]>([]);
     const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,10 +32,21 @@ export const BookingPage = () => {
             setError(null);
             setSelectedSeatIds([]);
 
+            const formatTime = (isoDate: string) =>
+                new Date(isoDate).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+
             try {
-                const data = await fetchSeats(movieId);
+                const data = await fetchShowtimeDetails(movieId);
                 if (!isCancelled) {
-                    setSeats(data);
+                    setMovieName(data.movie_title)
+                    setHallName(data.hall_name)
+                    setStartTime(formatTime(data.start_time))
+                    setEndTime(formatTime(data.end_time))
+                    setPrice(parseInt(data.price))
+                    setSeats(data.seats);
                 }
             } catch (err) {
                 if (!isCancelled) {
@@ -85,10 +99,10 @@ export const BookingPage = () => {
                 ← Back to Home
             </button>
             <h2 style={{ textAlign: 'center', marginBottom: '8px' }}>
-                Booking seats for movie #{movieId}
+                {movieName}
             </h2>
             <p style={{ textAlign: 'center', color: '#a0a0a0', marginBottom: '24px' }}>
-                Select your seats below.
+                {hallName} - {startTime} to {endTime}
             </p>
 
             {isLoading ? (
@@ -106,7 +120,7 @@ export const BookingPage = () => {
             <div className="booking-summary" style={{ marginTop: '24px', textAlign: 'center' }}>
                 <p className="booking-summary-text">
                     Selected seats: <strong>{selectedSeatIds.length}</strong> | Total:{' '}
-                    <strong>{selectedSeatIds.length * TICKET_PRICE}$</strong>
+                    <strong>{selectedSeatIds.length * price}$</strong>
                 </p>
                 <button
                     type="button"

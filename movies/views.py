@@ -12,11 +12,12 @@ from rest_framework.views import APIView
 
 import reservations
 from cinema_config.settings import MAILGUN_URL, MAILGUN_API_KEY
+from cinemas.models import Seat
 from movies.models import Movie, Showtime, Review
 from movies.permissions import IsAdminOrReadOnly
 from movies.serializers import MovieSerializer, ShowtimeSerializer, ReviewSerializer, PostReviewSerializer
 from movies.tasks import delete_completed_showtime
-from reservations.models import Reservation
+from reservations.models import Reservation, Ticket
 
 
 class MovieViewSet(viewsets.ModelViewSet):
@@ -164,16 +165,19 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
         )
         print("delete task created")
 
-    @action(detail=True, methods=['get'])
-    def seats(self, request, pk=None):
+    def retrieve(self, request, *args, **kwargs):
         showtime = self.get_object()
 
-        seats = showtime.hall.seats.all()
-        booked_seat_ids = (
-            showtime.reservations.filter(
-                status__in=['pending', 'confirmed']
+        seats = Seat.objects.filter(
+            hall_id=showtime.hall_id
+        ).order_by('row', 'number')
+
+        booked_seat_ids = set(
+            Ticket.objects.filter(
+                reservation__showtime=showtime,
+                reservation__status__in=['pending', 'confirmed'],
             )
-            .values_list('tickets__seat_id', flat=True)
+            .values_list('seat_id', flat=True)
             .distinct()
         )
 
@@ -182,12 +186,24 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
                 "id": seat.id,
                 "row": seat.row,
                 "number": seat.number,
-                "is_booked": seat.id in booked_seat_ids
+                "is_booked": seat.id in booked_seat_ids,
             }
             for seat in seats
         ]
 
-        return Response(seats_data)
+        showtime_data = {
+            "id": showtime.id,
+            "movie_id": showtime.movie.id,
+            "movie_title": showtime.movie.title,
+            "hall_id": showtime.hall.id,
+            "hall_name": showtime.hall.name,
+            "start_time": showtime.start_time,
+            "end_time": showtime.end_time,
+            "price": showtime.price,
+            "seats": seats_data,
+        }
+
+        return Response(showtime_data)
 
 class AdminMovieReportView(APIView):
     permission_classes = [IsAdminUser]

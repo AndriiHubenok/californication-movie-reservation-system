@@ -7,9 +7,10 @@ export interface CreateReservationPayload {
 
 export interface ReservationResponse {
     id: number;
+    showtime?: number;
     status: string;
     created_at: string;
-    seat_ids: number[];
+    tickets: number[];
 }
 
 export async function createReservation(payload: CreateReservationPayload): Promise<ReservationResponse> {

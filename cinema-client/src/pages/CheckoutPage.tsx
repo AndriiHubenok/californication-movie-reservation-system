@@ -7,6 +7,9 @@ export const CheckoutPage = () => {
     const navigate = useNavigate();
     const rawSeats = localStorage.getItem('selectedSeats');
     const seatIds: number[] = rawSeats ? (JSON.parse(rawSeats) as number[]) : [];
+    const showtime: Showtime = JSON.parse(localStorage.getItem('selectedShowtime'));
+    const showtimeId: number = showtime.id;
+    const price: number = showtime.price;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -21,8 +24,9 @@ export const CheckoutPage = () => {
         setErrorMessage(null);
 
         try {
-            const result = await createReservation({ seat_ids: seatIds });
+            const result = await createReservation({ showtime: showtimeId, seats: seatIds });
             localStorage.removeItem('selectedSeats');
+            localStorage.removeItem('selectedShowtime');
             alert(`Booking #${result.id} created successfully!`);
             navigate('/');
         } catch (error) {
@@ -48,7 +52,7 @@ export const CheckoutPage = () => {
                     Numbers of selected seats: <strong>{seatIds.join(', ') || 'None'}</strong>
                 </p>
                 <p>
-                    Total amount to pay: <strong>{seatIds.length * 150} UAH</strong>
+                    Total amount to pay: <strong>{seatIds.length * price}$</strong>
                 </p>
             </div>
 
