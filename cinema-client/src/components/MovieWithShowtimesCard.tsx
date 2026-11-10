@@ -24,7 +24,7 @@ export const MovieWithShowtimesCard = ({ movie, onSelect }: MovieCardProps) => {
             <div className="showtimes">
                 {movie.showtimes.map((showtime) => (
                     <span style={{ cursor: 'pointer', color: 'orange' }} key={showtime.id} className="showtime" onClick={() => onSelect(showtime)}>
-                        {formatTime(showtime.start_time)}
+                        {formatTime(showtime.start_time)+" "}
                     </span>
                 ))}
             </div>

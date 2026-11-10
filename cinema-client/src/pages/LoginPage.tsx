@@ -21,10 +21,15 @@ export const LoginPage = () => {
             return;
         }
 
-        const {access, refresh} = await loginRequest({username, password});
+        try {
+            const {access, refresh} = await loginRequest({username, password});
 
-        login(access, refresh, {username, password});
-        navigate(from, {replace: true});
+            login(access, refresh, {username, password});
+            navigate(from, {replace: true});
+
+        } catch (e) {
+            setError("Invalid username or password")
+        }
     };
 
     return (

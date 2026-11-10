@@ -5,21 +5,21 @@ import { CinemaHall } from '../components/CinemaHall';
 import type { Seat } from '../types/seat';
 
 export const BookingPage = () => {
-    const { movieId } = useParams<{ movieId: string }>();
+    const { movieId: showtimeId } = useParams<{ movieId: string }>();
     const navigate = useNavigate();
 
     const [hallName, setHallName] = useState<string>();
     const [movieName, setMovieName] = useState<string>();
     const [price, setPrice] = useState<number>();
-    const [startTime, setStartTime] = useState<number>();
-    const [endTime, setEndTime] = useState<number>();
+    const [startTime, setStartTime] = useState<string>();
+    const [endTime, setEndTime] = useState<string>();
     const [seats, setSeats] = useState<Seat[]>([]);
     const [selectedSeatIds, setSelectedSeatIds] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!movieId) {
+        if (!showtimeId) {
             setIsLoading(false);
             setError('Missing ID in route.');
             return;
@@ -39,13 +39,13 @@ export const BookingPage = () => {
                 });
 
             try {
-                const data = await fetchShowtimeDetails(movieId);
+                const data = await fetchShowtimeDetails(showtimeId);
                 if (!isCancelled) {
                     setMovieName(data.movie_title)
                     setHallName(data.hall_name)
                     setStartTime(formatTime(data.start_time))
                     setEndTime(formatTime(data.end_time))
-                    setPrice(parseInt(data.price))
+                    setPrice(Number(data.price).toFixed(2))
                     setSeats(data.seats);
                 }
             } catch (err) {
@@ -66,7 +66,7 @@ export const BookingPage = () => {
         return () => {
             isCancelled = true;
         };
-    }, [movieId]);
+    }, [showtimeId]);
 
     const handleSeatToggle = (seatId: number) => {
         setSelectedSeatIds((prev) =>

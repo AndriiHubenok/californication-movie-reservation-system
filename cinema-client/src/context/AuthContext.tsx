@@ -14,19 +14,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return savedUser ? (JSON.parse(savedUser) as User) : null;
     });
 
-    const login = (accessToken: string, refreshToken: string, userData: User) => {
-        setToken(accessToken);
+    const login = (access: string, refresh: string, userData: User) => {
         setUser(userData);
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('accessToken', access);
+        localStorage.setItem('refreshToken', refresh);
         localStorage.setItem('currentUser', JSON.stringify(userData));
     };
 
     const logout = () => {
-        setToken(null);
         setUser(null);
-        localStorage.removeItem('selectedMovie');
-        localStorage.removeItem('selectedSeats');
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('currentUser');

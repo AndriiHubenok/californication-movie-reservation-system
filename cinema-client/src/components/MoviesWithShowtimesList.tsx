@@ -5,10 +5,11 @@ import { fetchMoviesWithShowtimes } from '../api/movies';
 import type {MovieWithShowtimes} from "../types/movie.ts";
 
 interface ShowtimeListProps {
+    date: string
     onSelectShowtime: (showtime: MovieWithShowtimes) => void;
 }
 
-export const MoviesWithShowtimesList = ({ onSelectShowtime: onSelectShowtime }: ShowtimeListProps) => {
+export const MoviesWithShowtimesList = ({ date, onSelectShowtime: onSelectShowtime }: ShowtimeListProps) => {
     const [movies, setMovies] = useState<MovieWithShowtimes[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -17,7 +18,10 @@ export const MoviesWithShowtimesList = ({ onSelectShowtime: onSelectShowtime }: 
         setIsLoading(true);
         setErrorMessage(null);
         try {
-            const data = await fetchMoviesWithShowtimes();
+            if (!date) {
+                throw new Error('No date found.');
+            }
+            const data = await fetchMoviesWithShowtimes(date);
             setMovies(data);
         } catch (err) {
             setErrorMessage(err instanceof Error ? err.message : 'Unknown error');
@@ -28,7 +32,7 @@ export const MoviesWithShowtimesList = ({ onSelectShowtime: onSelectShowtime }: 
 
     useEffect(() => {
         loadShowtimesData();
-    }, []);
+    }, [date]);
 
     if (isLoading) {
         return (

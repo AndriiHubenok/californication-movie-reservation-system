@@ -56,11 +56,11 @@ function App() {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/booking/:movieId" element={<BookingPage />} />
                         <Route path="/login" element={<LoginPage />} />
-                        <Route path="/ticket" element={<TicketSuccessPage />} />
                         <Route path="*" element={<NotFoundPage />} />
 
                         <Route element={<ProtectedRoute />}>
                             <Route path="/checkout" element={<CheckoutPage />} />
+                            <Route path="/ticket" element={<TicketSuccessPage />} />
                         </Route>
                     </Routes>
                 </div>

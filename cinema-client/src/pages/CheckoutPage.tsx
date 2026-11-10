@@ -6,13 +6,34 @@ import { ApiError } from '../api/client';
 export const CheckoutPage = () => {
     const navigate = useNavigate();
     const rawSeats = localStorage.getItem('selectedSeats');
+    const rawShowtime = localStorage.getItem('selectedShowtime')
     const seatIds: number[] = rawSeats ? (JSON.parse(rawSeats) as number[]) : [];
-    const showtime: Showtime = JSON.parse(localStorage.getItem('selectedShowtime'));
+
+    if (!rawShowtime || seatIds.length === 0) {
+        return (
+            <div style={{ textAlign: 'center', padding: '48px 0' }}>
+                <p style={{ fontSize: '1.2rem', color: '#a0a0a0' }}>
+                    No showtime or seats selected. Please go back and select a showtime and seats.
+                </p>
+                <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={() => navigate('/')}
+                >
+                    Back to Home
+                </button>
+            </div>
+        )
+    }
+
+    const showtime: Showtime = JSON.parse(rawShowtime);
     const showtimeId: number = showtime.id;
     const price: number = showtime.price;
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+
 
     const handleConfirmBooking = async () => {
         if (seatIds.length === 0) {
@@ -27,8 +48,7 @@ export const CheckoutPage = () => {
             const result = await createReservation({ showtime: showtimeId, seats: seatIds });
             localStorage.removeItem('selectedSeats');
             localStorage.removeItem('selectedShowtime');
-            alert(`Booking #${result.id} created successfully!`);
-            navigate('/');
+            navigate('/ticket', { state: { reservation: result }, replace: true });
         } catch (error) {
             if (error instanceof ApiError) {
                 setErrorMessage(error.message);
