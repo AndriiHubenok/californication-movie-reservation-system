@@ -2,9 +2,8 @@ import {useEffect} from "react";
 
 
 export const TicketSuccessPage = () => {
-    const movie = JSON.parse(localStorage.getItem('selectedMovie') || '{}');
-    const rawSeats = localStorage.getItem('selectedSeats');
-    const seatIds: number[] = rawSeats ? JSON.parse(rawSeats) : [];
+
+    const state = location.state as { reservation?: ReservationResponse } | null;
 
     useEffect(() => {
         localStorage.removeItem('selectedSeats');
@@ -18,10 +17,13 @@ export const TicketSuccessPage = () => {
                 Your order has been successfully confirmed!
             </p>
             <p style={{ margin: '16px 0' }}>
-                Movie: <strong>{movie.title || 'N/A'}</strong>
+                Reservation: <strong>{state?.reservation?.id || 'N/A'}</strong>
             </p>
             <p style={{ margin: '16px 0' }}>
-                Selected tickets (seat IDs): <strong>{seatIds.join(', ') || 'No seats selected'}</strong>
+                Movie: <strong>{state?.reservation?.movie?.title || 'N/A'}</strong>
+            </p>
+            <p style={{ margin: '16px 0' }}>
+                Selected tickets (seat IDs): <strong>{state?.reservation?.seatIds.join(', ') || 'No seats selected'}</strong>
             </p>
         </main>
     );

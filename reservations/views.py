@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from reservations import serializers
 from reservations.models import Reservation, Payment, Ticket
 from reservations.permissions import IsStaff
 from reservations.serializers import ReservationSerializer, PaymentSerializer, CardPaymentSerializer
@@ -21,6 +22,11 @@ class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action in ['list', 'retrieve']:
+            return serializers.ReservationDetailSerializer
+        return super().get_serializer_class()
 
     def get_queryset(self):
         user = self.request.user

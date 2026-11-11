@@ -14,6 +14,7 @@ import { AuthProvider, useAuth } from './context/AuthContext.tsx';
 import { LoginPage } from './pages/LoginPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
+import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
 
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -26,6 +27,9 @@ const Header = () => {
                 <ul className="nav-list">
                     <li><NavLink to="/" end>Now Showing</NavLink></li>
                     <li><NavLink to="/checkout">Checkout</NavLink></li>
+                    {isAuthenticated && (
+                        <li><NavLink to="/my-reservations">My Reservations</NavLink></li>
+                    )}
                     {isAuthenticated ? (
                         <li style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <span style={{ fontSize: '0.9rem', color: '#a0a0a0' }}>{user?.username}</span>
@@ -61,6 +65,7 @@ function App() {
                         <Route element={<ProtectedRoute />}>
                             <Route path="/checkout" element={<CheckoutPage />} />
                             <Route path="/ticket" element={<TicketSuccessPage />} />
+                            <Route path="/my-reservations" element={<MyReservationsPage />} />
                         </Route>
                     </Routes>
                 </div>

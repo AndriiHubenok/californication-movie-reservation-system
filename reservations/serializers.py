@@ -18,7 +18,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'showtime', 'seats', 'status', 'tickets', 'created_at']
+        fields = ['id', 'showtime', 'status', 'tickets', 'created_at']
         read_only_fields = ['status', 'tickets', 'created_at']
 
     def validate(self, attrs):
@@ -83,6 +83,16 @@ class ReservationSerializer(serializers.ModelSerializer):
             cancel_unpaid_reservation.apply_async((created_reservation.id,), countdown=900)
 
         return created_reservation
+
+class ReservationDetailSerializer(serializers.ModelSerializer):
+    movie_title = serializers.CharField(source='showtime.movie.title', read_only=True)
+    start_time = serializers.DateTimeField(source='showtime.start_time', read_only=True)
+    cinema_name = serializers.CharField(source='showtime.hall.cinema', read_only=True)
+
+    class Meta:
+        model = Reservation
+        fields = ['id', 'showtime', 'status', 'tickets', 'movie_title', 'start_time', 'cinema_name', 'created_at']
+        read_only_fields = ['status', 'tickets', 'movie_title', 'start_time', 'cinema_name', 'created_at']
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:

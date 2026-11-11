@@ -124,3 +124,106 @@
 .booking-summary {
     text-align: center;
 }
+
+.confirm-dialog {
+    margin: auto;
+    padding: 0;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    max-width: 420px;
+    width: calc(100% - 32px);
+}
+
+.confirm-dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(3px);
+}
+
+.confirm-dialog-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.confirm-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: #ffffff;
+    border: 1px solid #555;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger {
+    background-color: #e50914;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger:disabled,
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.reservations-page {
+    max-width: 820px;
+    margin: 32px auto;
+    padding: 0 16px;
+}
+
+.reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.reservation-card {
+    background-color: #242424;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-paid,
+.status-confirmed {
+    background-color: rgba(46, 196, 182, 0.15);
+    color: #2ec4b6;
+}
+
+.status-pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.status-cancelled {
+    background-color: rgba(255, 77, 77, 0.15);
+    color: #ff4d4d;
+}
