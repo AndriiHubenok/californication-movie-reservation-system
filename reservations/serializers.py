@@ -18,7 +18,7 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reservation
-        fields = ['id', 'showtime', 'status', 'tickets', 'created_at']
+        fields = ['id', 'showtime', 'status', 'tickets', 'created_at', 'seats']
         read_only_fields = ['status', 'tickets', 'created_at']
 
     def validate(self, attrs):

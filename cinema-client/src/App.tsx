@@ -2,7 +2,7 @@ import type { Showtime } from './types/showtime.ts';
 import { MovieWithShowtimesCard } from './components/MovieWithShowtimesCard.tsx';
 import './App.css';
 import type {SeatData} from "./types/cinema.ts";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {CinemaHall} from "./components/CinemaHall.tsx";
 import { MoviesWithShowtimesList } from './components/MoviesWithShowtimesList.tsx';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
@@ -18,7 +18,6 @@ import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
 
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
-
 
     return (
         <header className="header">

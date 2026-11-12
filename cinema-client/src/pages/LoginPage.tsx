@@ -24,7 +24,7 @@ export const LoginPage = () => {
         try {
             const {access, refresh} = await loginRequest({username, password});
 
-            login(access, refresh, {username, password});
+            login(access, refresh, {username});
             navigate(from, {replace: true});
 
         } catch (e) {

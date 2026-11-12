@@ -17,13 +17,19 @@ export const MoviesWithShowtimesList = ({ date, onSelectShowtime: onSelectShowti
     const loadShowtimesData = async () => {
         setIsLoading(true);
         setErrorMessage(null);
+
+        const controller = new AbortController()
+
         try {
             if (!date) {
                 throw new Error('No date found.');
             }
-            const data = await fetchMoviesWithShowtimes(date);
+            const data = await fetchMoviesWithShowtimes(date, controller.signal);
             setMovies(data);
         } catch (err) {
+            if (err instanceof Error && err.name === 'AbortError') {
+                return;
+            }
             setErrorMessage(err instanceof Error ? err.message : 'Unknown error');
         } finally {
             setIsLoading(false);

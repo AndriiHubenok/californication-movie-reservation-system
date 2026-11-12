@@ -15,6 +15,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     const login = (access: string, refresh: string, userData: User) => {
+        setToken(access);
         setUser(userData);
         localStorage.setItem('accessToken', access);
         localStorage.setItem('refreshToken', refresh);
@@ -22,6 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     const logout = () => {
+        setToken(null);
         setUser(null);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');

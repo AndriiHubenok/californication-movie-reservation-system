@@ -25,7 +25,7 @@ export const BookingPage = () => {
             return;
         }
 
-        let isCancelled = false;
+        const controller = new AbortController();
 
         const loadSeats = async () => {
             setIsLoading(true);
@@ -39,32 +39,29 @@ export const BookingPage = () => {
                 });
 
             try {
-                const data = await fetchShowtimeDetails(showtimeId);
-                if (!isCancelled) {
-                    setMovieName(data.movie_title)
-                    setHallName(data.hall_name)
-                    setStartTime(formatTime(data.start_time))
-                    setEndTime(formatTime(data.end_time))
-                    setPrice(Number(data.price).toFixed(2))
-                    setSeats(data.seats);
-                }
+                const data = await fetchShowtimeDetails(showtimeId, controller.signal);
+                setMovieName(data.movie_title)
+                setHallName(data.hall_name)
+                setStartTime(formatTime(data.start_time))
+                setEndTime(formatTime(data.end_time))
+                setPrice(Number(data.price).toFixed(2))
+                setSeats(data.seats);
             } catch (err) {
-                if (!isCancelled) {
-                    setError(
-                        err instanceof Error ? err.message : 'Failed to load seats.'
-                    );
+                if (err instanceof Error && err.name === 'AbortError') {
+                    return;
                 }
+                setError(
+                    err instanceof Error ? err.message : 'Failed to load seats.'
+                );
             } finally {
-                if (!isCancelled) {
-                    setIsLoading(false);
-                }
+                setIsLoading(false);
             }
         };
 
         loadSeats();
 
         return () => {
-            isCancelled = true;
+            controller.abort();
         };
     }, [showtimeId]);
 

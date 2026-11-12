@@ -19,8 +19,9 @@ export interface ShowtimeDetailsResponse {
     }[];
 }
 
-export async function fetchShowtimeDetails(movieId: string) {
+export async function fetchShowtimeDetails(movieId: string, signal?: AbortSignal) {
     return await apiClient<ShowtimeDetailsResponse>(`/api/showtimes/${movieId}/`, {
         method: 'GET',
+        signal
     });
 }

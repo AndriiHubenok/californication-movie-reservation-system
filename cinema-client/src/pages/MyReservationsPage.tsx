@@ -17,6 +17,16 @@ export const MyReservationsPage = () => {
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
     const [actionError, setActionError] = useState<string | null>(null);
 
+    type FilterReservationType = 'all' | 'active' | 'cancelled' | 'pending'
+    const [filter, setFilter] = useState<FilterReservationType>('all');
+
+    const FILTER_OPTIONS: { label: string; value: FilterReservationType }[] = [
+        { label: 'All', value: 'all' },
+        { label: 'Active', value: 'active' },
+        { label: 'Cancelled', value: 'cancelled' },
+        { label: 'Pending', value: 'pending' },
+    ];
+
     const formatDateTime = (isoDate: string) =>
         new Date(isoDate).toLocaleString([], {
             dateStyle: 'short',
@@ -31,8 +41,10 @@ export const MyReservationsPage = () => {
             setError(null);
 
             try {
-                const data = await fetchMyReservations(controller.signal);
+
+                let data: ReservationItem[] = (await fetchMyReservations(controller.signal));
                 setReservations(data);
+
             } catch (err) {
                 if (err instanceof Error && err.name === 'AbortError') {
                     return;
@@ -55,6 +67,14 @@ export const MyReservationsPage = () => {
             controller.abort();
         };
     }, []);
+
+    const filteredReservations = reservations.filter((reservation) => {
+        const status = reservation.status.toLowerCase();
+        if (filter === 'active') return status === 'confirmed';
+        if (filter === 'cancelled') return status === 'cancelled';
+        if (filter === 'pending') return status === 'pending';
+        return true;
+    });
 
     const handleConfirmCancel = async () => {
         if (!targetReservation) return;
@@ -101,6 +121,23 @@ export const MyReservationsPage = () => {
     return (
         <main className="reservations-page">
             <h2>My Reservations</h2>
+            <p style={{ color: '#a0a0a0', marginBottom: '12px' }}>You have {filteredReservations.length} reservation(s).</p>
+            <div className="filter-reservation-options" style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                {FILTER_OPTIONS.map((option) => {
+                    const isActive = filter === option.value;
+
+                    return (
+                        <button
+                            key={option.value}
+                            type="button"
+                            className={`btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setFilter(option.value)}
+                        >
+                            {option.label}
+                        </button>
+                    );
+                })}
+            </div>
 
             {actionError && (
                 <div style={{ color: '#ff4d4d', background: '#2a1818', padding: '12px', borderRadius: '4px', marginTop: '16px' }}>
@@ -108,7 +145,7 @@ export const MyReservationsPage = () => {
                 </div>
             )}
 
-            {reservations.length === 0 ? (
+            {filteredReservations.length === 0 ? (
                 <div style={{ marginTop: '32px', textAlign: 'center', padding: '32px', background: '#1e1e1e', borderRadius: '8px' }}>
                     <p style={{ color: '#a0a0a0', marginBottom: '16px' }}>
                         You have not any reservation yet :(
@@ -119,7 +156,7 @@ export const MyReservationsPage = () => {
                 </div>
             ) : (
                 <div className="reservations-list">
-                    {reservations.map((item) => (
+                    {filteredReservations.map((item) => (
                         <article key={item.id} className="reservation-card">
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
