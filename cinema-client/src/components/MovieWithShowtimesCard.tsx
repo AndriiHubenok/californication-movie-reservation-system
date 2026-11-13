@@ -1,5 +1,6 @@
 import type { Showtime } from '../types/showtime.ts';
 import type {MovieWithShowtimes} from "../types/movie.ts";
+import {Link} from "react-router-dom";
 
 interface MovieCardProps {
     movie: MovieWithShowtimes;
@@ -17,10 +18,13 @@ export const MovieWithShowtimesCard = ({ movie, onSelect }: MovieCardProps) => {
     return (
         <article className="movie-card">
             <img src={movie.poster} alt={movie.title} className="movie-poster" />
-            <h3>{movie.title}</h3>
+            <h3><Link to={`/movies/${movie.id}`} className="details-link" style={{
+                textDecoration: 'none',
+                color: 'inherit',
+            }}>
+                {movie.title}
+            </Link></h3>
             <p>{movie.description}</p>
-            {/*<p>Duration: {movie.duration} min.</p>*/}
-            {/*<p>Genres: {movie.genres.join(', ')}</p>*/}
             <div className="showtimes">
                 {movie.showtimes.map((showtime) => (
                     <span style={{ cursor: 'pointer', color: 'orange' }} key={showtime.id} className="showtime" onClick={() => onSelect(showtime)}>

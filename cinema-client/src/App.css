@@ -227,3 +227,135 @@
     background-color: rgba(255, 77, 77, 0.15);
     color: #ff4d4d;
 }
+
+/* Interactive Star Rating */
+.star-rating {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.star-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: #444;
+    cursor: pointer;
+    padding: 0 2px;
+    transition: color 0.12s ease, transform 0.12s ease;
+}
+
+.star-btn.filled {
+    color: #ffc107;
+}
+
+.star-btn:not(:disabled):hover {
+    transform: scale(1.15);
+}
+
+.star-btn:disabled {
+    cursor: default;
+    font-size: 1.15rem;
+}
+
+/* Movie Details Page */
+.movie-details-page {
+    max-width: 900px;
+    margin: 32px auto;
+    padding: 0 16px;
+}
+
+.back-link {
+    display: inline-block;
+    color: #a0a0a0;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.back-link:hover {
+    color: #ffffff;
+}
+
+.movie-hero {
+    display: flex;
+    gap: 32px;
+    background-color: #1e1e1e;
+    padding: 24px;
+    border-radius: 10px;
+    margin-bottom: 36px;
+}
+
+.movie-hero-poster {
+    width: 240px;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.movie-hero-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.movie-meta {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+}
+
+.movie-description {
+    line-height: 1.6;
+    color: #e0e0e0;
+}
+
+/* Reviews */
+.reviews-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-form,
+.review-auth-prompt {
+    background-color: #242424;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.review-form textarea {
+    padding: 10px 12px;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background-color: #1a1a1a;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: vertical;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.review-card {
+    background-color: #1e1e1e;
+    border: 1px solid #2e2e2e;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.review-date {
+    font-size: 0.8rem;
+    color: #777;
+}

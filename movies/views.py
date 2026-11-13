@@ -52,6 +52,7 @@ class MovieViewSet(viewsets.ModelViewSet):
             "rating": round(movie.rating, 1) if movie.rating else 0.0,
             "poster": movie.poster.url,
             "genres": [genre.name for genre in movie.genres.all()],
+            "duration": movie.duration,
             "showtimes":
                 [
                     {
@@ -67,7 +68,7 @@ class MovieViewSet(viewsets.ModelViewSet):
                     {
                         "id": review.id,
                         "points": review.points,
-                        "user_id": review.user.id,
+                        "username": review.user.username,
                         "grade": review.grade,
                         "comment": review.comment,
                         "created_at": review.created_at,

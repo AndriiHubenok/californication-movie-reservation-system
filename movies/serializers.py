@@ -23,11 +23,12 @@ class MovieSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
 
     movie_title = serializers.CharField(source='movie.title', read_only=True)
+    username = serializers.CharField(source='user.username', read_only=True)
 
     class Meta:
         model = Review
-        fields = ['id', 'user', 'movie', 'movie_title', 'points', 'grade', 'comment', 'created_at']
-        read_only_fields = ['id', 'user', 'movie', 'created_at']
+        fields = ['id', 'user', 'username', 'movie', 'movie_title', 'points', 'grade', 'comment', 'created_at']
+        read_only_fields = ['id', 'username', 'movie', 'created_at']
 
 class PostReviewSerializer(serializers.Serializer):
 

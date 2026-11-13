@@ -15,6 +15,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
+import {MovieDetailsPage} from "./pages/MovieDetailsPage.tsx";
 
 const Header = () => {
     const { user, isAuthenticated, logout } = useAuth();
@@ -57,8 +58,9 @@ function App() {
                     <Header />
                     <Routes>
                         <Route path="/" element={<HomePage />} />
-                        <Route path="/booking/:movieId" element={<BookingPage />} />
                         <Route path="/login" element={<LoginPage />} />
+                        <Route path="/booking/:movieId" element={<BookingPage />} />
+                        <Route path="/movies/:movieId" element={<MovieDetailsPage />} />
                         <Route path="*" element={<NotFoundPage />} />
 
                         <Route element={<ProtectedRoute />}>
