@@ -2,7 +2,8 @@ import os
 from datetime import timedelta
 
 import requests
-from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg, Prefetch
+from django.db.models import Sum, Count, Q, ExpressionWrapper, F, IntegerField, DecimalField, FloatField, Avg, Prefetch, \
+    Model
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action, permission_classes
@@ -13,7 +14,7 @@ from rest_framework.views import APIView
 import reservations
 from cinema_config.settings import MAILGUN_URL, MAILGUN_API_KEY
 from cinemas.models import Seat
-from movies.models import Movie, Showtime, Review
+from movies.models import Movie, Showtime, Review, Genre
 from movies.permissions import IsAdminOrReadOnly
 from movies.serializers import MovieSerializer, ShowtimeSerializer, ReviewSerializer, PostReviewSerializer
 from movies.tasks import delete_completed_showtime
@@ -104,6 +105,7 @@ class MovieViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def showtimes(self, request):
         showtime_qs = Showtime.objects.all()
+        genre_qs = Genre.objects.all()
 
         date = request.query_params.get('date')
         if date:
@@ -114,7 +116,8 @@ class MovieViewSet(viewsets.ModelViewSet):
             showtime_qs = showtime_qs.filter(hall__cinema_id=cinema_id)
 
         movies = Movie.objects.prefetch_related(
-            Prefetch('showtimes', queryset=showtime_qs.order_by('start_time'))
+            Prefetch('showtimes', queryset=showtime_qs.order_by('start_time')),
+            Prefetch('genres', queryset=genre_qs)
         )
 
         if date or cinema_id:
@@ -125,6 +128,7 @@ class MovieViewSet(viewsets.ModelViewSet):
                 "id": movie.id,
                 "title": movie.title,
                 "description": movie.description,
+                "genres": [genre.name for genre in movie.genres.all()],
                 "poster": movie.poster.url if movie.poster else None,
                 "showtimes": [
                     {

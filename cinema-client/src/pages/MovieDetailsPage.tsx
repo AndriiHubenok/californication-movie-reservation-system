@@ -116,6 +116,10 @@ export const MovieDetailsPage = () => {
                     </p>
                     <p className="movie-description">{movie.description}</p>
                 </div>
+                <div className="movie-rating">
+                    <h2 style={{ color: '#a0a0a0' }}>User rating:</h2>
+                    <strong style={{ fontSize: '2.00rem', fontWeight: 'bold' }}>{movie.rating}/10</strong>
+                </div>
             </section>
 
             <section className="reviews-section">
