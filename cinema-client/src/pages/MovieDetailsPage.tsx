@@ -126,7 +126,19 @@ export const MovieDetailsPage = () => {
                         <h4>Leave a review</h4>
                         <div className="form-group">
                             <label>Your grade:</label>
-                            <StarRating value={grade} onChange={setGrade} />
+                            <strong className="grade-value">
+                                <button
+                                    className="btn btn-secondary"
+                                    type="button"
+                                    onClick={() => setGrade(grade < 10 ? grade + 1 : 10)}
+                                >+</button>
+                                <button
+                                    className="btn btn-secondary"
+                                    type="button"
+                                    onClick={() => setGrade(grade > 1 ? grade - 1 : 1)}
+                                >-</button>
+                                {grade} / 10
+                            </strong>
                         </div>
                         <div className="form-group">
                             <label htmlFor="review-comment">Comment:</label>
@@ -160,8 +172,8 @@ export const MovieDetailsPage = () => {
                         reviews.map((review) => (
                             <article key={review.id} className="review-card">
                                 <div className="review-header">
-                                    <strong>{review.user}</strong>
-                                    <StarRating value={review.rating} readOnly />
+                                    <strong>{review.username}</strong>
+                                    <strong>{review.grade}/10</strong>
                                 </div>
                                 <p className="review-body">{review.comment}</p>
                                 <time className="review-date">
