@@ -465,3 +465,13 @@
     flex-direction: column;
     gap: 16px;
 }
+
+.form-group input.input-error {
+    border-color: #ff4d4d;
+    background-color: #2a1818;
+}
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 0.85rem;
+}

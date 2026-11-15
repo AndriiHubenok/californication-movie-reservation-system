@@ -3,12 +3,14 @@
 export class ApiError extends Error {
     public status: number;
     public data: unknown;
+    public fieldErrors: Record<string, string[]>;
 
-    constructor(status: number, message: string, data: unknown) {
+    constructor(status: number, message: string, data: unknown, fieldErrors: Record<string, string[]> = {}) {
         super(message);
         this.name = 'ApiError';
         this.status = status;
         this.data = data;
+        this.fieldErrors = fieldErrors;
     }
 }
 
@@ -103,12 +105,17 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
 
     if (!response.ok) {
         let errorMessage = `HTTP Error ${response.status}`;
+        let fieldErrors: Record<string, string[]> = {};
         if (responseData && typeof responseData === 'object') {
-            errorMessage = Object.entries(responseData)
-                .map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(', ') : errs}`)
+            errorMessage = Object.entries(responseData as Record<string, unknown>)
+                .map(([field, errs]) => {
+                    const messages = Array.isArray(errs) ? errs.map(String) : [String(errs)];
+                    fieldErrors[field] = messages;
+                    return `${field}: ${messages.join(', ')}`;
+                })
                 .join('; ');
         }
-        throw new ApiError(response.status, errorMessage, responseData);
+        throw new ApiError(response.status, errorMessage, responseData, fieldErrors);
     }
 
     return responseData as T;

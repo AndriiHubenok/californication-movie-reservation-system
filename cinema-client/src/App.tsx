@@ -16,11 +16,17 @@ import {ProtectedRoute} from './components/ProtectedRoute';
 import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
 import {MovieDetailsPage} from "./pages/MovieDetailsPage.tsx";
-import {ToastProvider} from "./context/ToastContext.tsx";
+import {ToastProvider, useToast} from "./context/ToastContext.tsx";
 import {RegisterPage} from "./pages/RegisterPage.tsx";
 
 const Header = () => {
     const {user, isAuthenticated, logout} = useAuth();
+    const { showToast } = useToast()
+
+    const logoutHandler = () => {
+        logout();
+        showToast('Logged out successfully', 'info');
+    }
 
     return (
         <header className="header">
@@ -37,7 +43,7 @@ const Header = () => {
                             <span style={{fontSize: '0.9rem', color: '#a0a0a0'}}>{user?.username}</span>
                             <button
                                 type="button"
-                                onClick={logout}
+                                onClick={logoutHandler}
                                 style={{
                                     background: 'transparent',
                                     border: '1px solid #444',
