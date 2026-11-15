@@ -62,6 +62,9 @@ export const LoginPage = () => {
                 {error && <p style={{color: '#ff4d4d', fontSize: '0.9rem'}}>{error}</p>}
                 <button type="submit" className="btn btn-primary">Login</button>
             </form>
+            <p style={{ marginTop: '16px', color: '#a0a0a0', fontSize: '0.9rem' }}>
+                Don't have an account? <a href="/register">Register here</a>
+            </p>
         </main>
     );
 };
