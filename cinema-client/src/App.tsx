@@ -18,6 +18,7 @@ import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
 import {MovieDetailsPage} from "./pages/MovieDetailsPage.tsx";
 import {ToastProvider, useToast} from "./context/ToastContext.tsx";
 import {RegisterPage} from "./pages/RegisterPage.tsx";
+import {VerifyEmailPage} from "./pages/VerifyEmailPage.tsx";
 
 const Header = () => {
     const {user, isAuthenticated, logout} = useAuth();
@@ -75,6 +76,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<HomePage/>}/>
                             <Route path="/register" element={<RegisterPage/>}/>
+                            <Route path="/verify-email" element={<VerifyEmailPage />} />
                             <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/booking/:movieId" element={<BookingPage/>}/>
                             <Route path="/movies/:movieId" element={<MovieDetailsPage/>}/>

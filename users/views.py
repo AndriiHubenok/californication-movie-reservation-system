@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.response import Response
@@ -18,15 +20,18 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=False)
-        domain = self.request.get_host()
+        domain = os.getenv("FRONTEND_URL")
         send_verification_email_task.delay(user.id, domain)
 
 class VerifyEmailView(APIView):
     permission_classes = []
 
-    def get(self, request, uidb64, token):
+    def post(self, request, *args, **kwargs):
+        uid = request.data.get('uid')
+        token = request.data.get('token')
+
         try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
+            uid = force_str(urlsafe_base64_decode(uid))
             user = User.objects.get(pk=uid)
         except Exception as e:
             print(f"Verification error: {e}")

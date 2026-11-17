@@ -19,7 +19,7 @@ def send_verification_email_task(user_id, domain):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = default_token_generator.make_token(user)
 
-    verification_link = f"http://{domain}/api/verify/{uid}/{token}/"
+    verification_link = f"{domain}/verify-email?uid={uid}&token={token}"
 
     subject = "Account Verification 🎬"
 
@@ -36,7 +36,11 @@ def send_verification_email_task(user_id, domain):
                 Welcome to Californication Movie Reservation! To complete your registration and start booking tickets, please verify your email address by clicking the button below.
             </p>
             <div style="text-align: center; margin: 35px 0;">
-                <a href="{verification_link}" style="background-color: #e50914; color: #ffffff; padding: 14px 32px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">Verify Email</a>
+                <a href="{verification_link}" style="background-color: #e50914; color: #ffffff; padding: 14px 32px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">
+                    <button style="background-color: #e50914; color: #ffffff; padding: 14px 32px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 6px; display: inline-block;">Verify Email</button>
+                </a>
+            </div>
+            <div style="text-align: center; margin: 35px 0;">
             </div>
             <p style="color: #71717a; font-size: 14px; margin-bottom: 0; line-height: 1.5;">
                 If the button doesn't work, copy and paste this link into your browser:<br>

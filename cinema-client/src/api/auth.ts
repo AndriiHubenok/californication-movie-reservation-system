@@ -22,6 +22,16 @@ export interface RegisterResponse {
     email: string;
 }
 
+export interface VerifyEmailPayload {
+    uid: string;
+    token: string;
+}
+
+export interface MessageResponse {
+    detail?: string;
+    message?: string;
+}
+
 export async function loginRequest({ username, password }: LoginRequest) {
     return apiClient<LoginResponse>('/api/token/', {
         method: 'POST',
@@ -31,6 +41,13 @@ export async function loginRequest({ username, password }: LoginRequest) {
 
 export async function registerRequest(payload: RegisterPayload): Promise<RegisterResponse> {
     return apiClient<RegisterResponse>('/api/register/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+    });
+}
+
+export async function verifyEmailRequest(payload: VerifyEmailPayload): Promise<MessageResponse> {
+    return apiClient<MessageResponse>('/api/verify/', {
         method: 'POST',
         body: JSON.stringify(payload),
     });
