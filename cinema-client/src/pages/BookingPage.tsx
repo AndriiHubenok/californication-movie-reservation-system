@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchShowtimeDetails } from '../api/showtimes';
+import {fetchShowtimeDetails, type ShowtimeDetailsResponse} from '../api/showtimes';
 import { CinemaHall } from '../components/CinemaHall';
 import type { Seat } from '../types/seat';
 
@@ -39,12 +39,12 @@ export const BookingPage = () => {
                 });
 
             try {
-                const data = await fetchShowtimeDetails(showtimeId, controller.signal);
+                const data: ShowtimeDetailsResponse = await fetchShowtimeDetails(showtimeId, controller.signal);
                 setMovieName(data.movie_title)
                 setHallName(data.hall_name)
                 setStartTime(formatTime(data.start_time))
                 setEndTime(formatTime(data.end_time))
-                setPrice(Number(data.price).toFixed(2))
+                setPrice(parseFloat(data.price.toFixed(2)))
                 setSeats(data.seats);
             } catch (err) {
                 if (err instanceof Error && err.name === 'AbortError') {
@@ -117,7 +117,7 @@ export const BookingPage = () => {
             <div className="booking-summary" style={{ marginTop: '24px', textAlign: 'center' }}>
                 <p className="booking-summary-text">
                     Selected seats: <strong>{selectedSeatIds.length}</strong> | Total:{' '}
-                    <strong>{selectedSeatIds.length * price}$</strong>
+                    <strong>{selectedSeatIds.length * (price ? price : 0.00)}</strong>
                 </p>
                 <button
                     type="button"

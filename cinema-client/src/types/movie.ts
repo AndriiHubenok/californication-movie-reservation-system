@@ -4,6 +4,7 @@ export interface MovieWithShowtimes {
     id: number;
     title: string;
     description?: string;
+    genres?: string[];
     poster?: string;
     showtimes: Showtime[];
 }
@@ -12,6 +13,7 @@ export interface MovieInfo {
     id: number;
     title: string;
     description?: string;
+    duration?: number;
     rating: number;
     poster?: string;
     genres?: string[];

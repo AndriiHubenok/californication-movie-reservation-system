@@ -11,12 +11,7 @@ export interface ShowtimeDetailsResponse {
     start_time: string;
     end_time: string;
     price: number;
-    seats: {
-        id: number;
-        row: number;
-        number: number;
-        is_booked: boolean;
-    }[];
+    seats: Seat[];
 }
 
 export async function fetchShowtimeDetails(movieId: string, signal?: AbortSignal) {

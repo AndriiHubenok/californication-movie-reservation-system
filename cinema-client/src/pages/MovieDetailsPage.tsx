@@ -3,18 +3,17 @@ import { Link, useParams } from 'react-router-dom';
 import {
     createMovieReview,
     fetchMovieInfo,
-    type MovieReview,
 } from '../api/movies';
 import { ApiError } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { StarRating } from '../components/StarRating';
-import type { Movie } from '../types/movie';
+import type {MovieInfo, MovieReview} from "../types/movie.ts";
 
 export const MovieDetailsPage = () => {
     const { movieId } = useParams<{ movieId: string }>();
     const { isAuthenticated } = useAuth();
 
-    const [movie, setMovie] = useState<Movie | null>(null);
+    const [movie, setMovie] = useState<MovieInfo | null>(null);
     const [reviews, setReviews] = useState<MovieReview[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);

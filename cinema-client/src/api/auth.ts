@@ -52,3 +52,10 @@ export async function verifyEmailRequest(payload: VerifyEmailPayload): Promise<M
         body: JSON.stringify(payload),
     });
 }
+
+export async function resendVerificationRequest(email: string): Promise<MessageResponse> {
+    return apiClient<MessageResponse>('/api/verify/resend/', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+    });
+}

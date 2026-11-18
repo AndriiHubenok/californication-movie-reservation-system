@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState, type FormEvent} from 'react';
 import {Link, useSearchParams} from 'react-router-dom';
-import {verifyEmailRequest} from '../api/auth';
+import {resendVerificationRequest, verifyEmailRequest} from '../api/auth';
 import {ApiError} from '../api/client';
 import {useToast} from '../context/ToastContext';
 
@@ -13,8 +13,8 @@ export const VerifyEmailPage = () => {
     const [searchParams] = useSearchParams();
     const {showToast} = useToast();
 
-    const uid = searchParams.get('uid') ?? undefined;
-    const token = searchParams.get('token');
+    const uid: string = searchParams.get('uid') ?? '';
+    const token: string = searchParams.get('token') ?? '';
 
     const [state, setState] = useState<VerificationState>(() =>
         token
@@ -35,7 +35,7 @@ export const VerifyEmailPage = () => {
 
         const confirmEmail = async () => {
             try {
-                const response = await verifyEmailRequest({uid, token});
+                const response = await verifyEmailRequest({ uid, token});
                 console.log('Email verification response:', response);
                 setState({
                     status: 'success',
@@ -58,6 +58,25 @@ export const VerifyEmailPage = () => {
 
         confirmEmail();
     }, [uid, token]);
+
+    const handleResendSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        if (!resendEmail.trim()) return;
+
+        setIsResending(true);
+        try {
+            await resendVerificationRequest(resendEmail.trim());
+            showToast('New verification email sent.', 'success');
+            setResendEmail('');
+        } catch (err) {
+            showToast(
+                err instanceof ApiError ? err.message : 'Failed to send verification email.',
+                'error'
+            );
+        } finally {
+            setIsResending(false);
+        }
+    };
 
     return (
         <main style={{maxWidth: '460px', margin: '56px auto', padding: '0 16px'}}>
@@ -100,7 +119,7 @@ export const VerifyEmailPage = () => {
                         </p>
 
                         <form
-                            onSubmit={console.log('resend email')}
+                            onSubmit={handleResendSubmit}
                             style={{
                                 borderTop: '1px solid #333',
                                 paddingTop: '20px',

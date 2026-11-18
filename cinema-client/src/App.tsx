@@ -13,12 +13,12 @@ import {NotFoundPage} from "./pages/NotFoundPage.tsx";
 import {AuthProvider, useAuth} from './context/AuthContext.tsx';
 import {LoginPage} from './pages/LoginPage';
 import {ProtectedRoute} from './components/ProtectedRoute';
-import {TicketSuccessPage} from "./pages/TicketSuccessPage.tsx";
 import {MyReservationsPage} from "./pages/MyReservationsPage.tsx";
 import {MovieDetailsPage} from "./pages/MovieDetailsPage.tsx";
 import {ToastProvider, useToast} from "./context/ToastContext.tsx";
 import {RegisterPage} from "./pages/RegisterPage.tsx";
 import {VerifyEmailPage} from "./pages/VerifyEmailPage.tsx";
+import {PublicOnlyRoute} from "./components/PublicOnlyRoute.tsx";
 
 const Header = () => {
     const {user, isAuthenticated, logout} = useAuth();
@@ -75,16 +75,18 @@ function App() {
                         <Header/>
                         <Routes>
                             <Route path="/" element={<HomePage/>}/>
-                            <Route path="/register" element={<RegisterPage/>}/>
-                            <Route path="/verify-email" element={<VerifyEmailPage />} />
-                            <Route path="/login" element={<LoginPage/>}/>
                             <Route path="/booking/:movieId" element={<BookingPage/>}/>
                             <Route path="/movies/:movieId" element={<MovieDetailsPage/>}/>
                             <Route path="*" element={<NotFoundPage/>}/>
 
+                            <Route element={<PublicOnlyRoute/>}>
+                                <Route path="/register" element={<RegisterPage/>}/>
+                                <Route path="/verify-email" element={<VerifyEmailPage />} />
+                                <Route path="/login" element={<LoginPage/>}/>
+                            </Route>
+
                             <Route element={<ProtectedRoute/>}>
                                 <Route path="/checkout" element={<CheckoutPage/>}/>
-                                <Route path="/ticket" element={<TicketSuccessPage/>}/>
                                 <Route path="/my-reservations" element={<MyReservationsPage/>}/>
                             </Route>
                         </Routes>

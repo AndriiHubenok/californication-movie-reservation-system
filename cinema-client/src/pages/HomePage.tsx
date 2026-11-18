@@ -4,6 +4,7 @@ import {MoviesWithShowtimesList} from '../components/MoviesWithShowtimesList.tsx
 import type {Showtime} from "../types/showtime.ts";
 import {useDebounce} from "../hooks/useDebounce.ts";
 import {fetchMoviesWithShowtimes} from "../api/movies.ts";
+import type {MovieWithShowtimes} from "../types/movie.ts";
 
 export const HomePage = () => {
     const navigate = useNavigate();

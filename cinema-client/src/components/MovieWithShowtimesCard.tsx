@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 
 interface MovieCardProps {
     movie: MovieWithShowtimes;
-    onSelect: (showtime: MovieWithShowtimes) => void;
+    onSelect: (showtime: Showtime) => void;
 }
 
 export const MovieWithShowtimesCard = ({ movie, onSelect }: MovieCardProps) => {

@@ -15,7 +15,7 @@ export interface ReservationItem {
     tickets: number[];
     cinema_name?: string;
     movie_title?: string;
-    showtime_start_time?: string;
+    start_time: string;
 }
 
 export async function createReservation(payload: CreateReservationPayload): Promise<ReservationItem> {

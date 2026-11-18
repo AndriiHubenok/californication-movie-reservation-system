@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createReservation } from '../api/reservations';
 import { ApiError } from '../api/client';
+import type {Showtime} from "../types/showtime.ts";
 
 export const CheckoutPage = () => {
     const navigate = useNavigate();

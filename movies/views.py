@@ -191,7 +191,7 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
                 "id": seat.id,
                 "row": seat.row,
                 "number": seat.number,
-                "is_booked": seat.id in booked_seat_ids,
+                "is_occupied": seat.id in booked_seat_ids,
             }
             for seat in seats
         ]

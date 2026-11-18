@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.utils.encoding import force_str
 from django.utils.http import urlsafe_base64_decode
@@ -20,6 +21,12 @@ class RegisterView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.save(is_active=False)
+        domain = os.getenv("FRONTEND_URL")
+        send_verification_email_task.delay(user.id, domain)
+
+    @action(detail=False, methods=['post'])
+    def verify(self):
+
         domain = os.getenv("FRONTEND_URL")
         send_verification_email_task.delay(user.id, domain)
 
@@ -49,6 +56,31 @@ class VerifyEmailView(APIView):
                 {"error": "This link is not actual or invalid."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+    @action(detail=False, methods=['post'])
+    def resend(self, request):
+        email = request.data.get('email')
+        if not email:
+            return Response(
+                {"error": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User with this email does not exist."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        domain = os.getenv("FRONTEND_URL")
+        send_verification_email_task.delay(user.id, domain)
+
+        return Response(
+            {"message": "New verification email sent."},
+            status=status.HTTP_200_OK
+        )
 
 class UserProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer

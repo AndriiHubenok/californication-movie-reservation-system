@@ -166,7 +166,7 @@ export const MyReservationsPage = () => {
                                     </span>
                                 </div>
                                 <p style={{ color: '#a0a0a0', fontSize: '0.9rem' }}>
-                                    {item?.cinema_name} - {item?.movie_title} {formatDateTime(item?.start_time)} · Tickets: {item.tickets?.length ?? 0} ·{' '}
+                                    {item?.cinema_name} - {item?.movie_title} {formatDateTime(item.start_time)} · Tickets: {item.tickets?.length ?? 0} ·{' '}
                                     Created: {formatDateTime(item.created_at)}
                                 </p>
                             </div>
