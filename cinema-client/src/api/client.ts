@@ -120,3 +120,31 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
 
     return responseData as T;
 }
+
+export async function apiBlobClient(endpoint: string, _retry = false): Promise<Blob> {
+    const headers: Record<string, string> = {};
+    const activeToken = localStorage.getItem('accessToken');
+    if (activeToken) {
+        headers['Authorization'] = `Bearer ${activeToken}`;
+    }
+
+    const response = await fetch(endpoint, {
+        method: 'GET',
+        headers,
+    });
+
+    if (response.status === 401 && !_retry) {
+        const newAccessToken = await refreshAccessToken();
+        if (newAccessToken) {
+            return apiBlobClient(endpoint, true);
+        }
+        window.location.href = '/login';
+        throw new ApiError(401, 'Session expired. Please log in again.', null);
+    }
+
+    if (!response.ok) {
+        throw new ApiError(response.status, `Failed to download file (HTTP ${response.status})`, null);
+    }
+
+    return response.blob();
+}
