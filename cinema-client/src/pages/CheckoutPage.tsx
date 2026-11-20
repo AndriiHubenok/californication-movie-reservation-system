@@ -28,13 +28,14 @@ export const CheckoutPage = () => {
 
     const rawSeats = localStorage.getItem('selectedSeats');
     const rawShowtime = localStorage.getItem('selectedShowtime');
+    const pendingReservation = localStorage.getItem('pendingReservation') ?? null;
 
     const seatIds: number[] = rawSeats ? (JSON.parse(rawSeats) as number[]) : [];
     const showtime: StoredShowtime | null = rawShowtime
         ? (JSON.parse(rawShowtime) as StoredShowtime)
         : null;
 
-    const [reservation, setReservation] = useState<ReservationItem | null>(null);
+    const [reservation, setReservation] = useState<ReservationItem | null>(pendingReservation ? JSON.parse(pendingReservation) : null);
     const [isCreating, setIsCreating] = useState(false);
     const [createError, setCreateError] = useState<string | null>(null);
     const [secondsLeft, setSecondsLeft] = useState<number>(RESERVATION_TTL_SECONDS);

@@ -1,5 +1,5 @@
 import {apiClient} from "./client.ts";
-import type {MovieWithShowtimes, MovieInfo} from "../types/movie.ts";
+import type {MovieWithShowtimes, MovieInfo, MovieReview} from "../types/movie.ts";
 
 export interface CreateReviewPayload {
     grade: number;

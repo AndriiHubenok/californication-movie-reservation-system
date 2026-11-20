@@ -1,5 +1,6 @@
 export interface User {
     username: string;
+    isStaff: boolean;
 }
 
 export interface AuthContextType {

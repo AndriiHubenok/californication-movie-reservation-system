@@ -42,6 +42,15 @@ export type PayReservationResponse =
     | PaymentConfirmedResponse
     | PaymentRequiresActionResponse;
 
+export interface TicketValidationResponse {
+    message: string;
+    ticket_id: number;
+    movie_title: string;
+    showtime: string;
+    seat: string;
+    user: string;
+}
+
 export async function createReservation(payload: CreateReservationPayload): Promise<ReservationItem> {
     return apiClient<ReservationItem>('/api/reservations/', {
         method: 'POST',
@@ -96,4 +105,10 @@ export async function downloadTicketPdf(reservationId: number): Promise<void> {
     } finally {
         URL.revokeObjectURL(objectUrl);
     }
+}
+
+export async function validateTicket(qrCode: string): Promise<TicketValidationResponse> {
+    return apiClient<TicketValidationResponse>(`/api/reservations/validate?qr_data=${qrCode}`, {
+        method: 'GET',
+    });
 }

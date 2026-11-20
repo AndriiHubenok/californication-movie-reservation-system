@@ -1,7 +1,7 @@
 import {useState, type FormEvent} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {useAuth} from '../context/AuthContext.tsx';
-import {loginRequest} from "../api/auth.ts";
+import {getOwnUserInfo, loginRequest} from "../api/auth.ts";
 import {useToast} from "../context/ToastContext.tsx";
 import {PasswordInput} from "../components/PasswordInput.tsx";
 
@@ -26,8 +26,9 @@ export const LoginPage = () => {
 
         try {
             const {access, refresh} = await loginRequest({username, password});
-
-            login(access, refresh, {username});
+            login(access, refresh, {username, isStaff: false});
+            const {is_staff} = await getOwnUserInfo();
+            login(access, refresh, {username, isStaff: is_staff});
             navigate(from, {replace: true});
             showToast('Logged in successfully as ' + username, 'success');
 

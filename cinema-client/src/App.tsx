@@ -19,6 +19,8 @@ import {ToastProvider, useToast} from "./context/ToastContext.tsx";
 import {RegisterPage} from "./pages/RegisterPage.tsx";
 import {VerifyEmailPage} from "./pages/VerifyEmailPage.tsx";
 import {PublicOnlyRoute} from "./components/PublicOnlyRoute.tsx";
+import {StaffRoute} from "./components/StaffRoute.tsx";
+import {ValidateTicketPage} from "./pages/ValidateTicketPage.tsx";
 
 const Header = () => {
     const {user, isAuthenticated, logout} = useAuth();
@@ -88,6 +90,11 @@ function App() {
                             <Route element={<ProtectedRoute/>}>
                                 <Route path="/checkout" element={<CheckoutPage/>}/>
                                 <Route path="/my-reservations" element={<MyReservationsPage/>}/>
+                            </Route>
+
+                            <Route element={<StaffRoute/>}>
+                                <Route path="/staff" element={<div>Staff Dashboard</div>}/>
+                                <Route path="/validate-ticket" element={<ValidateTicketPage/>}/>
                             </Route>
                         </Routes>
                     </div>

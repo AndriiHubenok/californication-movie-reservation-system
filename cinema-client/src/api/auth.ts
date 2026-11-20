@@ -1,4 +1,5 @@
 import {apiClient} from "./client.ts";
+import type {User} from "../types/auth.ts";
 
 interface LoginRequest {
     username: string;
@@ -32,6 +33,11 @@ export interface MessageResponse {
     message?: string;
 }
 
+interface GetOwnUserInfoResponse {
+    username: string;
+    is_staff: boolean;
+}
+
 export async function loginRequest({ username, password }: LoginRequest) {
     return apiClient<LoginResponse>('/api/token/', {
         method: 'POST',
@@ -57,5 +63,11 @@ export async function resendVerificationRequest(email: string): Promise<MessageR
     return apiClient<MessageResponse>('/api/verify/resend/', {
         method: 'POST',
         body: JSON.stringify({ email }),
+    });
+}
+
+export async function getOwnUserInfo(): Promise<GetOwnUserInfoResponse> {
+    return apiClient<GetOwnUserInfoResponse>('/api/me/', {
+        method: 'GET',
     });
 }

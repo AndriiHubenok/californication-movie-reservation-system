@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
     cancelReservation,
     fetchMyReservations,
@@ -12,6 +12,7 @@ export const MyReservationsPage = () => {
     const [reservations, setReservations] = useState<ReservationItem[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     const [targetReservation, setTargetReservation] = useState<ReservationItem | null>(null);
     const [isCancelling, setIsCancelling] = useState<boolean>(false);
@@ -165,6 +166,19 @@ export const MyReservationsPage = () => {
                                         {item.status}
                                     </span>
                                 </div>
+                                {item.status.toLowerCase() === 'pending' && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                            setActionError(null);
+                                            localStorage.setItem('pendingReservation', JSON.stringify(item));
+                                            navigate(`/checkout?reservation_id=${item.id}`);
+                                        }}
+                                    >
+                                        Complete Payment
+                                    </button>
+                                )}
                                 <p style={{ color: '#a0a0a0', fontSize: '0.9rem' }}>
                                     {item?.cinema_name} - {item?.movie_title} {formatDateTime(item.start_time)} · Tickets: {item.tickets?.length ?? 0} ·{' '}
                                     Created: {formatDateTime(item.created_at)}
